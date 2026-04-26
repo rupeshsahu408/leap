@@ -2,110 +2,35 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Marquee from '../components/Marquee'
 import Footer from '../components/Footer'
+import { useScrollReveal } from '../hooks/useScrollReveal'
 
 const features = [
-  {
-    icon: '🚀',
-    title: 'Real Startup Experience',
-    desc: 'Work on live startup projects with real founders, not hypothetical case studies.',
-  },
-  {
-    icon: '🧠',
-    title: 'Industry-Led Curriculum',
-    desc: 'Learn from practitioners who have built and scaled successful ventures.',
-  },
-  {
-    icon: '🌐',
-    title: 'Global Network',
-    desc: 'Connect with a community of entrepreneurs, mentors and investors worldwide.',
-  },
-  {
-    icon: '⚡',
-    title: 'Fast-Track Learning',
-    desc: 'Compressed cohort model lets you learn more in 3 months than in 3 years.',
-  },
-  {
-    icon: '💼',
-    title: 'Placement Support',
-    desc: 'Our alumni network ensures you land roles at top startups and corporates.',
-  },
-  {
-    icon: '🏆',
-    title: 'Certificate of Excellence',
-    desc: 'Earn a verifiable credential recognized by 200+ partner organizations.',
-  },
+  { icon: '🚀', title: 'Real Startup Experience', desc: 'Work on live startup projects with real founders, not hypothetical case studies.' },
+  { icon: '🧠', title: 'Industry-Led Curriculum', desc: 'Learn from practitioners who have built and scaled successful ventures.' },
+  { icon: '🌐', title: 'Global Network', desc: 'Connect with a community of entrepreneurs, mentors and investors worldwide.' },
+  { icon: '⚡', title: 'Fast-Track Learning', desc: 'Compressed cohort model lets you learn more in 3 months than in 3 years.' },
+  { icon: '💼', title: 'Placement Support', desc: 'Our alumni network ensures you land roles at top startups and corporates.' },
+  { icon: '🏆', title: 'Certificate of Excellence', desc: 'Earn a verifiable credential recognized by 200+ partner organizations.' },
 ]
 
 const courses = [
-  {
-    icon: '📈',
-    tag: 'Marketing',
-    title: 'Full Stack Marketing',
-    desc: 'Master growth hacking, SEO, paid ads, and product marketing from scratch to expert.',
-    duration: '12 Weeks',
-    level: 'Beginner',
-  },
-  {
-    icon: '💻',
-    tag: 'Technology',
-    title: 'Product Management',
-    desc: 'Build, launch, and scale digital products using agile frameworks and user research.',
-    duration: '10 Weeks',
-    level: 'Intermediate',
-  },
-  {
-    icon: '💰',
-    tag: 'Finance',
-    title: 'Startup Finance & Fundraising',
-    desc: 'Understand venture capital, pitch decks, cap tables, and financial modeling.',
-    duration: '8 Weeks',
-    level: 'All Levels',
-  },
-  {
-    icon: '🎨',
-    tag: 'Design',
-    title: 'UX & Brand Strategy',
-    desc: 'Craft compelling user experiences and build brand identities that resonate.',
-    duration: '8 Weeks',
-    level: 'Beginner',
-  },
-  {
-    icon: '🔗',
-    tag: 'Operations',
-    title: 'Operations & Scale',
-    desc: 'Learn how to run lean operations, hire teams, and scale startup processes.',
-    duration: '6 Weeks',
-    level: 'Advanced',
-  },
-  {
-    icon: '🤖',
-    tag: 'AI/Tech',
-    title: 'AI for Entrepreneurs',
-    desc: 'Leverage AI tools to build faster, make smarter decisions, and out-execute competitors.',
-    duration: '6 Weeks',
-    level: 'Intermediate',
-  },
+  { icon: '📈', tag: 'Marketing', title: 'Full Stack Marketing', desc: 'Master growth hacking, SEO, paid ads, and product marketing from scratch to expert.', duration: '12 Weeks', level: 'Beginner' },
+  { icon: '💻', tag: 'Technology', title: 'Product Management', desc: 'Build, launch, and scale digital products using agile frameworks and user research.', duration: '10 Weeks', level: 'Intermediate' },
+  { icon: '💰', tag: 'Finance', title: 'Startup Finance & Fundraising', desc: 'Understand venture capital, pitch decks, cap tables, and financial modeling.', duration: '8 Weeks', level: 'All Levels' },
+  { icon: '🎨', tag: 'Design', title: 'UX & Brand Strategy', desc: 'Craft compelling user experiences and build brand identities that resonate.', duration: '8 Weeks', level: 'Beginner' },
+  { icon: '🔗', tag: 'Operations', title: 'Operations & Scale', desc: 'Learn how to run lean operations, hire teams, and scale startup processes.', duration: '6 Weeks', level: 'Advanced' },
+  { icon: '🤖', tag: 'AI/Tech', title: 'AI for Entrepreneurs', desc: 'Leverage AI tools to build faster, make smarter decisions, and out-execute competitors.', duration: '6 Weeks', level: 'Intermediate' },
 ]
 
 const testimonials = [
-  {
-    text: 'LEAP transformed the way I think about building a business. The real-world projects gave me confidence that no classroom could match.',
-    name: 'Aanya Sharma',
-    role: 'Founder, GreenLoop',
-  },
-  {
-    text: 'I went from zero marketing knowledge to running paid campaigns generating 5x ROI within 3 months of joining LEAP.',
-    name: 'Rohan Mehta',
-    role: 'Growth Manager, Razorpay',
-  },
-  {
-    text: 'The mentor network alone is worth 10x the course fee. I connected with investors who funded my startup through LEAP.',
-    name: 'Priya Nair',
-    role: 'CEO, TechVeda',
-  },
+  { text: 'LEAP transformed the way I think about building a business. The real-world projects gave me confidence that no classroom could match.', name: 'Aanya Sharma', role: 'Founder, GreenLoop' },
+  { text: 'I went from zero marketing knowledge to running paid campaigns generating 5x ROI within 3 months of joining LEAP.', name: 'Rohan Mehta', role: 'Growth Manager, Razorpay' },
+  { text: 'The mentor network alone is worth 10x the course fee. I connected with investors who funded my startup through LEAP.', name: 'Priya Nair', role: 'CEO, TechVeda' },
 ]
 
 export default function Home() {
+  useScrollReveal()
+
   return (
     <>
       <Marquee />
@@ -133,7 +58,7 @@ export default function Home() {
           </p>
 
           <div className="hero-cta">
-            <Link to="/contact" className="btn-primary">Join the Cohort</Link>
+            <Link to="/register" className="btn-primary">Join the Cohort</Link>
             <Link to="/platform" className="btn-outline">Explore Courses</Link>
           </div>
         </div>
@@ -145,7 +70,7 @@ export default function Home() {
           </div>
           <div className="hero-date">1 April – 30 June 2026</div>
           <div className="hero-date-sub">Open for Joining</div>
-          <Link to="/contact" className="hero-cta-link">
+          <Link to="/register" className="hero-cta-link">
             Join the Cohort <span className="arrow">→</span>
           </Link>
         </div>
@@ -153,40 +78,35 @@ export default function Home() {
 
       {/* Stats */}
       <div className="stats-bar">
-        <div className="stat-item">
-          <div className="stat-number">5,000+</div>
-          <div className="stat-label">Alumni Worldwide</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">200+</div>
-          <div className="stat-label">Partner Companies</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">95%</div>
-          <div className="stat-label">Placement Rate</div>
-        </div>
-        <div className="stat-item">
-          <div className="stat-number">50+</div>
-          <div className="stat-label">Expert Mentors</div>
-        </div>
+        {[
+          { num: '5,000+', label: 'Alumni Worldwide' },
+          { num: '200+', label: 'Partner Companies' },
+          { num: '95%', label: 'Placement Rate' },
+          { num: '50+', label: 'Expert Mentors' },
+        ].map((s, i) => (
+          <div className="stat-item reveal" key={i} style={{ transitionDelay: `${i * 0.08}s` }}>
+            <div className="stat-number">{s.num}</div>
+            <div className="stat-label">{s.label}</div>
+          </div>
+        ))}
       </div>
 
       {/* Features */}
       <section className="section">
         <div className="container">
-          <span className="section-label">Why Choose LEAP</span>
-          <h2 className="section-title">
+          <span className="section-label reveal">Why Choose LEAP</span>
+          <h2 className="section-title reveal">
             Education built for the{' '}
             <span className="highlight">real world</span>
           </h2>
-          <p className="section-subtitle">
+          <p className="section-subtitle reveal">
             We don't just teach you — we put you in the arena where ideas get
             tested, businesses get built, and careers get transformed.
           </p>
 
           <div className="features-grid">
             {features.map((f, i) => (
-              <div className="feature-card" key={i}>
+              <div className={`feature-card reveal stagger-${(i % 6) + 1}`} key={i}>
                 <div className="feature-icon">{f.icon}</div>
                 <h3>{f.title}</h3>
                 <p>{f.desc}</p>
@@ -199,11 +119,11 @@ export default function Home() {
       {/* How it works */}
       <section className="section" style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
-          <span className="section-label">The Process</span>
-          <h2 className="section-title">
+          <span className="section-label reveal">The Process</span>
+          <h2 className="section-title reveal">
             How <span className="highlight">LEAP works</span>
           </h2>
-          <p className="section-subtitle">
+          <p className="section-subtitle reveal">
             A structured, cohort-based program designed to simulate the real startup environment.
           </p>
 
@@ -214,8 +134,8 @@ export default function Home() {
                 { n: '02', title: 'Join a Cohort', desc: 'Start your journey with a curated batch of fellow founders, marketers, and builders over 8–12 weeks.' },
                 { n: '03', title: 'Learn by Building', desc: 'Work on live projects, complete industry challenges, and receive mentorship from real practitioners.' },
                 { n: '04', title: 'Launch & Connect', desc: 'Graduate with a portfolio of real work, a powerful network, and the skills to move fast.' },
-              ].map(step => (
-                <div className="how-step" key={step.n}>
+              ].map((step, i) => (
+                <div className={`how-step reveal stagger-${i + 1}`} key={step.n}>
                   <div className="step-number">{step.n}</div>
                   <div className="step-content">
                     <h3>{step.title}</h3>
@@ -225,7 +145,7 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="how-visual">
+            <div className="how-visual reveal">
               {[
                 { icon: '📋', title: 'Application Review', sub: 'Profile & motivation check', tag: 'Step 1' },
                 { icon: '👥', title: 'Cohort Kickoff', sub: 'Meet your batch & mentors', tag: 'Step 2' },
@@ -249,18 +169,18 @@ export default function Home() {
       {/* Courses */}
       <section className="section">
         <div className="container">
-          <span className="section-label">What You'll Learn</span>
-          <h2 className="section-title">
+          <span className="section-label reveal">What You'll Learn</span>
+          <h2 className="section-title reveal">
             Programs built for{' '}
             <span className="highlight">builders</span>
           </h2>
-          <p className="section-subtitle">
+          <p className="section-subtitle reveal">
             Choose from our range of industry-designed programs and start building from day one.
           </p>
 
           <div className="courses-grid">
             {courses.map((c, i) => (
-              <div className="course-card" key={i}>
+              <div className={`course-card reveal stagger-${(i % 6) + 1}`} key={i}>
                 <div className="course-img">
                   <span>{c.icon}</span>
                   <div className="course-img-overlay" />
@@ -283,15 +203,15 @@ export default function Home() {
       {/* Testimonials */}
       <section className="section" style={{ background: 'var(--bg-card)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
         <div className="container">
-          <span className="section-label">Success Stories</span>
-          <h2 className="section-title">
+          <span className="section-label reveal">Success Stories</span>
+          <h2 className="section-title reveal">
             Hear from our{' '}
             <span className="highlight">alumni</span>
           </h2>
 
           <div className="testimonials-grid">
             {testimonials.map((t, i) => (
-              <div className="testimonial-card" key={i}>
+              <div className={`testimonial-card reveal stagger-${i + 1}`} key={i}>
                 <div className="stars">★★★★★</div>
                 <div className="testimonial-quote">"</div>
                 <p className="testimonial-text">{t.text}</p>
@@ -311,7 +231,7 @@ export default function Home() {
       {/* CTA */}
       <section className="section">
         <div className="container">
-          <div className="cta-banner">
+          <div className="cta-banner reveal">
             <h2>
               Ready to make the <span className="highlight">LEAP?</span>
             </h2>
@@ -320,7 +240,7 @@ export default function Home() {
               limited — don't miss your chance to join India's top startup school.
             </p>
             <div className="cta-buttons">
-              <Link to="/contact" className="btn-primary">Apply Now</Link>
+              <Link to="/register" className="btn-primary">Apply Now →</Link>
               <Link to="/platform" className="btn-outline">View Programs</Link>
             </div>
           </div>
