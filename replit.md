@@ -1,55 +1,81 @@
-# LEAP Startup Platform
+# Foundry — A Network for Builders
 
-A full-stack startup ecosystem platform with AI advisor, co-founder matching, course enrollment, and funding resources.
+A social network and platform built specifically for entrepreneurs to find co-founders, share ideas, get AI-powered guidance, and grow their startups together.
 
 ## Tech Stack
 
 ### Frontend
-- React 18 + TypeScript
-- Vite 6 (port 5000)
-- React Router v6
-- Google Fonts (Inter + Playfair Display)
+- **React 18 + TypeScript** + **Vite 6** (port 5000, PWA-enabled)
+- **Tailwind CSS v4** (via `@tailwindcss/vite`)
+- **React Router v6** for routing
+- **lucide-react** for icons
+- **Inter** + **Playfair Display** (Google Fonts)
+- **vite-plugin-pwa** for installable Progressive Web App
 
-### Backend
-- Express.js (port 8000)
-- PostgreSQL (Replit DB)
-- JWT authentication
-- bcryptjs password hashing
-- Google Gemini AI (gemini-1.5-flash)
+### Backend / Data
+- **Firebase Auth** (Google sign-in)
+- **Firebase Firestore** (real-time database, accessed directly from client)
+- **Google Gemini AI** (`@google/generative-ai`) — wired up in a later phase
 
-## Pages & Features
+## Project Structure
 
-### Public Pages
-- `/` — Homepage (hero, stats, features, courses, testimonials)
-- `/platform` — All programs with module details and pricing
-- `/locations` — 6 Indian city campuses
-- `/institutions` — Partnership models
-- `/community` — Events, alumni, Discord
-- `/contact` — Application form
-- `/login` — Login
-- `/register` — Register
+```
+src/
+├── App.tsx              # Routes + auth guards
+├── main.tsx             # Entry, registers service worker
+├── index.css            # Tailwind v4 + theme
+├── lib/
+│   ├── firebase.ts      # Firebase init (auth, firestore, providers)
+│   └── auth.tsx         # AuthProvider + useAuth() hook
+├── components/
+│   ├── AppShell.tsx     # Layout (desktop sidebar + mobile bottom nav)
+│   └── Logo.tsx
+└── pages/
+    ├── SignIn.tsx       # Google sign-in
+    ├── Onboarding.tsx   # 3-step profile setup
+    ├── Feed.tsx         # Home feed (placeholder for Phase 2)
+    └── Profile.tsx      # Current user profile
+public/
+├── icons/               # PWA icons (SVG)
+└── favicon.svg
+```
 
-### Protected Dashboard (requires login)
-- `/dashboard` — Overview stats, quick actions, enrolled courses
-- `/dashboard/ai-advisor` — Gemini AI startup advisor chat
-- `/dashboard/ideas` — Create & AI-analyze startup ideas
-- `/dashboard/cofounders` — Find and connect with co-founders
-- `/dashboard/courses` — Enroll and track course progress
-- `/dashboard/profile` — Edit skills, bio, stage, looking-for
+## Routing & Auth
 
-## Database Tables
-- `users` — Auth + profile (skills, stage, location, looking_for)
-- `startup_ideas` — Ideas with AI feedback
-- `cofounder_requests` — Connection requests between users
-- `course_enrollments` — Course enrollment + progress
-- `ai_conversations` — Chat history with AI advisor
+- `/signin` — public, Google sign-in
+- `/onboarding` — auth required, completed once per user
+- `/` — feed (auth + onboarded required)
+- `/profile` — current user profile
 
-## Environment Variables
-- `DATABASE_URL` — PostgreSQL connection string (auto-set)
-- `JWT_SECRET` — JWT signing key (auto-generated)
-- `GEMINI_API_KEY` — Google Gemini AI key
-- `BACKEND_PORT` — Backend port (8000)
+`AuthProvider` listens to Firebase Auth, ensures a `users/{uid}` document
+exists in Firestore, and exposes `signInWithGoogle`, `signOut`, and
+`saveProfile` helpers.
+
+## Environment Variables (required for Firebase)
+
+Stored as Replit secrets (Vite reads them at build/dev via `import.meta.env`):
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+
+Later phases:
+- `GEMINI_API_KEY` — for the AI advisor (Phase 6)
 
 ## Run
-- Frontend: `npm run dev` (port 5000)
-- Backend: `npm run server` (port 8000)
+- `npm run dev` (port 5000) — handled by the "Start application" workflow
+
+## Roadmap (phased build)
+0. **Foundation** — Firebase + PWA + clean app shell ✅
+1. **Identity & Profiles** — onboarding + profile pages ✅
+2. **Social Feed** — posts, likes, comments, hashtags
+3. **Network & DMs** — follow / connect, real-time messaging
+4. **Startup Pages** — public startup profiles
+5. **Co-founder Match** — smart matching by skills & stage
+6. **AI Advisor** — Gemini chat + idea analysis
+7. **Investors & Funding** — pitch + warm intros
+8. **Communities & Events** — groups, meetups, AMAs
+9. **Mentorship & Learning** — mentor booking, resources
+10. **Polish & Growth** — notifications, search, recommendations

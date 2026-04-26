@@ -1,31 +1,29 @@
 {
-  "name": "leapstartup-clone",
+  "name": "foundry",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5000",
-    "server": "node server/index.js",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host 0.0.0.0 --port 5000"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "bcryptjs": "^3.0.3",
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "pg": "^8.20.0",
+    "firebase": "^11.0.2",
+    "lucide-react": "^0.460.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
+    "tailwindcss": "^4.0.0",
     "typescript": "~5.6.2",
-    "vite": "^6.0.1"
+    "vite": "^6.0.1",
+    "vite-plugin-pwa": "^0.21.1"
   }
 }

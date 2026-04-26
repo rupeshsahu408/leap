@@ -1,64 +1,72 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './context/AuthContext'
+import { AuthProvider, useAuth } from './lib/auth'
 import { ReactNode } from 'react'
 
-import Home from './pages/Home'
-import Platform from './pages/Platform'
-import Locations from './pages/Locations'
-import Institutions from './pages/Institutions'
-import Community from './pages/Community'
-import Contact from './pages/Contact'
-import Login from './pages/Login'
-import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import AIAdvisor from './pages/AIAdvisor'
-import CoFounders from './pages/CoFounders'
-import Ideas from './pages/Ideas'
-import MyCourses from './pages/MyCourses'
+import SignIn from './pages/SignIn'
+import Onboarding from './pages/Onboarding'
+import Feed from './pages/Feed'
 import Profile from './pages/Profile'
+import AppShell from './components/AppShell'
 
-function Protected({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth()
-  if (loading) return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-dark)', color: 'var(--text-secondary)' }}>
+function Loading() {
+  return (
+    <div className="h-full grid place-items-center text-zinc-500 text-sm">
       Loading…
     </div>
   )
-  return user ? <>{children}</> : <Navigate to="/login" replace />
 }
 
-function AppRoutes() {
-  return (
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Routes>
-        {/* Public */}
-        <Route path="/" element={<Home />} />
-        <Route path="/platform" element={<Platform />} />
-        <Route path="/locations" element={<Locations />} />
-        <Route path="/institutions" element={<Institutions />} />
-        <Route path="/community" element={<Community />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        {/* Protected Dashboard */}
-        <Route path="/dashboard" element={<Protected><Dashboard /></Protected>} />
-        <Route path="/dashboard/ai-advisor" element={<Protected><AIAdvisor /></Protected>} />
-        <Route path="/dashboard/ideas" element={<Protected><Ideas /></Protected>} />
-        <Route path="/dashboard/cofounders" element={<Protected><CoFounders /></Protected>} />
-        <Route path="/dashboard/courses" element={<Protected><MyCourses /></Protected>} />
-        <Route path="/dashboard/profile" element={<Protected><Profile /></Protected>} />
-      </Routes>
-    </BrowserRouter>
-  )
+function Protected({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Loading />
+  if (!user) return <Navigate to="/signin" replace />
+  return <>{children}</>
 }
 
-function App() {
+function RequireOnboarded({ children }: { children: ReactNode }) {
+  const { profile, loading } = useAuth()
+  if (loading) return <Loading />
+  if (!profile?.onboarded) return <Navigate to="/onboarding" replace />
+  return <>{children}</>
+}
+
+function PublicOnly({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Loading />
+  if (user) return <Navigate to="/" replace />
+  return <>{children}</>
+}
+
+export default function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
+          <Route path="/signin" element={<PublicOnly><SignIn /></PublicOnly>} />
+          <Route
+            path="/onboarding"
+            element={
+              <Protected>
+                <Onboarding />
+              </Protected>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <Protected>
+                <RequireOnboarded>
+                  <AppShell />
+                </RequireOnboarded>
+              </Protected>
+            }
+          >
+            <Route index element={<Feed />} />
+            <Route path="profile" element={<Profile />} />
+          </Route>
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </AuthProvider>
   )
 }
-
-export default App
