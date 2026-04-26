@@ -3,7 +3,14 @@ import { Home, Users, PlusCircle, MessageCircle, User, Rocket, Sparkles, Bot } f
 import { useAuth } from '../lib/auth'
 import Logo from './Logo'
 
-const navItems = [
+type NavItem = {
+  to: string
+  icon: typeof Home
+  label: string
+  end?: boolean
+}
+
+const navItems: NavItem[] = [
   { to: '/', icon: Home, label: 'Feed', end: true },
   { to: '/network', icon: Users, label: 'Network' },
   { to: '/post', icon: PlusCircle, label: 'Post' },
@@ -11,7 +18,7 @@ const navItems = [
   { to: '/profile', icon: User, label: 'Me' },
 ]
 
-const sidebarExtras = [
+const sidebarExtras: NavItem[] = [
   { to: '/match', icon: Sparkles, label: 'Co-founder Match' },
   { to: '/startups', icon: Rocket, label: 'Ventures' },
   { to: '/advisor', icon: Bot, label: 'AI Advisor' },

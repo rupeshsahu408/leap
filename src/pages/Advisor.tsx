@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Sparkles, Send, RotateCcw, Loader2 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import {
@@ -33,6 +34,11 @@ const SUGGESTIONS = [
 
 export default function Advisor() {
   const { user, profile } = useAuth()
+  const location = useLocation()
+  const navigate = useNavigate()
+  const seed: string | undefined = (location.state as { seed?: string } | null)?.seed
+  const sentSeedRef = useRef(false)
+  const [loaded, setLoaded] = useState(false)
   const [messages, setMessages] = useState<AdvisorMessage[]>([])
   const [text, setText] = useState('')
   const [streaming, setStreaming] = useState('')
@@ -42,7 +48,10 @@ export default function Advisor() {
 
   useEffect(() => {
     if (!user) return
-    return subscribeAdvisorMessages(user.uid, setMessages)
+    return subscribeAdvisorMessages(user.uid, (msgs) => {
+      setMessages(msgs)
+      setLoaded(true)
+    })
   }, [user])
 
   useEffect(() => {
@@ -50,6 +59,14 @@ export default function Advisor() {
     if (!el) return
     el.scrollTop = el.scrollHeight
   }, [messages.length, streaming])
+
+  useEffect(() => {
+    if (!seed || sentSeedRef.current || !loaded || !user || busy) return
+    sentSeedRef.current = true
+    navigate(location.pathname, { replace: true, state: null })
+    void send(seed)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seed, loaded, user])
 
   async function send(rawText: string) {
     const userText = rawText.trim()

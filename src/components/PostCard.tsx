@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Heart, MessageCircle, Trash2 } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Heart, MessageCircle, Sparkles, Trash2 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import {
   type Post,
@@ -11,12 +11,14 @@ import {
   addComment,
   deletePost,
 } from '../lib/posts'
+import { postFeedbackPrompt } from '../lib/advisor'
 import { timeAgo } from '../lib/time'
 import HashtagText from './HashtagText'
 import Avatar from './Avatar'
 
 export default function PostCard({ post }: { post: Post }) {
   const { user, profile } = useAuth()
+  const navigate = useNavigate()
   const [liked, setLiked] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [comments, setComments] = useState<Comment[]>([])
@@ -66,6 +68,12 @@ export default function PostCard({ post }: { post: Post }) {
   }
 
   const isOwner = user?.uid === post.authorId
+  const canAskAdvisor = isOwner && !!post.text?.trim()
+
+  function askAdvisor() {
+    if (!post.text) return
+    navigate('/advisor', { state: { seed: postFeedbackPrompt(post.text) } })
+  }
 
   return (
     <article className="rounded-2xl border border-[var(--color-line)] bg-white shadow-sm overflow-hidden">
@@ -131,6 +139,16 @@ export default function PostCard({ post }: { post: Post }) {
           <MessageCircle className="size-4" />
           <span>{post.commentCount || 0}</span>
         </button>
+        {canAskAdvisor && (
+          <button
+            onClick={askAdvisor}
+            title="Get advisor feedback on this post"
+            className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm text-brand-700 hover:bg-brand-50"
+          >
+            <Sparkles className="size-4" />
+            <span className="hidden sm:inline">Ask advisor</span>
+          </button>
+        )}
       </footer>
 
       {showComments && (

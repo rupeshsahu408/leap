@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, ExternalLink, Pencil, Rocket, Users } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, ExternalLink, Pencil, Rocket, Sparkles, Users } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { subscribeStartup, type Startup } from '../lib/startups'
 import { fetchUser, type PublicUser } from '../lib/social'
+import { ventureFeedbackPrompt } from '../lib/advisor'
 import Avatar from '../components/Avatar'
 
 export default function StartupView() {
   const { id = '' } = useParams()
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [data, setData] = useState<Startup | null | undefined>(undefined)
   const [team, setTeam] = useState<PublicUser[]>([])
 
@@ -29,6 +31,22 @@ export default function StartupView() {
   )
 
   const isOwner = user?.uid === data.ownerId
+  const canAskAdvisor = data.teamIds.includes(user?.uid ?? '')
+
+  function askAdvisor() {
+    navigate('/advisor', {
+      state: {
+        seed: ventureFeedbackPrompt({
+          name: data!.name,
+          tagline: data!.tagline,
+          description: data!.description,
+          stage: data!.stage,
+          lookingFor: data!.lookingFor,
+          industries: data!.industries,
+        }),
+      },
+    })
+  }
 
   return (
     <div className="space-y-5">
@@ -86,6 +104,14 @@ export default function StartupView() {
             >
               <Pencil className="size-3.5" /> Edit
             </Link>
+          )}
+          {canAskAdvisor && (
+            <button
+              onClick={askAdvisor}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-sm font-medium hover:bg-brand-100"
+            >
+              <Sparkles className="size-3.5" /> Ask advisor
+            </button>
           )}
         </div>
 
