@@ -8,7 +8,10 @@ import Feed from './pages/Feed'
 import Compose from './pages/Compose'
 import Tag from './pages/Tag'
 import Profile from './pages/Profile'
-import ComingSoon from './pages/ComingSoon'
+import Network from './pages/Network'
+import UserProfile from './pages/UserProfile'
+import Messages from './pages/Messages'
+import Conversation from './pages/Conversation'
 import AppShell from './components/AppShell'
 
 function Loading() {
@@ -67,27 +70,11 @@ export default function App() {
             <Route index element={<Feed />} />
             <Route path="post" element={<Compose />} />
             <Route path="tag/:tag" element={<Tag />} />
+            <Route path="network" element={<Network />} />
+            <Route path="u/:uid" element={<UserProfile />} />
+            <Route path="messages" element={<Messages />} />
+            <Route path="messages/:id" element={<Conversation />} />
             <Route path="profile" element={<Profile />} />
-            <Route
-              path="discover"
-              element={
-                <ComingSoon
-                  phase="Phase 4"
-                  title="Discover startups & people"
-                  description="Browse startups by industry and stage, and find new founders to follow. Coming next."
-                />
-              }
-            />
-            <Route
-              path="network"
-              element={
-                <ComingSoon
-                  phase="Phase 3"
-                  title="Your network"
-                  description="Follow other founders, accept connection requests, and message your network in real time."
-                />
-              }
-            />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

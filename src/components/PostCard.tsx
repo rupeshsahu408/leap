@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Heart, MessageCircle, Trash2 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import {
@@ -70,10 +71,14 @@ export default function PostCard({ post }: { post: Post }) {
     <article className="rounded-2xl border border-[var(--color-line)] bg-white shadow-sm overflow-hidden">
       <div className="p-4 sm:p-5">
         <header className="flex items-start gap-3">
-          <Avatar src={post.authorPhotoURL} name={post.authorName} size={42} />
+          <Link to={`/u/${post.authorId}`} className="shrink-0">
+            <Avatar src={post.authorPhotoURL} name={post.authorName} size={42} />
+          </Link>
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="font-semibold text-[15px]">{post.authorName}</span>
+              <Link to={`/u/${post.authorId}`} className="font-semibold text-[15px] hover:underline">
+                {post.authorName}
+              </Link>
               <span className="text-xs text-zinc-400">· {timeAgo(post.createdAt)}</span>
             </div>
             {post.authorHeadline && (

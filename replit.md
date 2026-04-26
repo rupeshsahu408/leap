@@ -29,12 +29,16 @@ src/
 │   ├── firebase.ts      # Firebase init (auth, firestore, providers)
 │   ├── auth.tsx         # AuthProvider + useAuth() hook
 │   ├── posts.ts         # Firestore CRUD: posts, likes, comments, hashtag query
+│   ├── social.ts        # Users directory + follow/unfollow + counts
+│   ├── messaging.ts     # Conversations + real-time messages
 │   ├── cloudinary.ts    # Unsigned image upload helper
 │   └── time.ts          # timeAgo() formatter
 ├── components/
 │   ├── AppShell.tsx     # Layout (desktop sidebar + mobile bottom nav)
 │   ├── Logo.tsx
 │   ├── Avatar.tsx
+│   ├── FollowButton.tsx
+│   ├── UserCard.tsx
 │   ├── HashtagText.tsx  # Renders #hashtags as Links
 │   ├── PostComposer.tsx # Text + optional image, hashtag-aware
 │   └── PostCard.tsx     # Post + likes + inline comments
@@ -45,7 +49,10 @@ src/
     ├── Compose.tsx      # Full-page composer (mobile "Post" tab)
     ├── Tag.tsx          # Filtered feed for /tag/:tag
     ├── Profile.tsx      # Current user profile
-    └── ComingSoon.tsx   # Stub for /discover and /network (Phase 3/4)
+    ├── Network.tsx      # Discover + Following tabs, search
+    ├── UserProfile.tsx  # Public profile at /u/:uid (follow + message)
+    ├── Messages.tsx     # Conversation list at /messages
+    └── Conversation.tsx # 1-on-1 chat at /messages/:id
 public/
 ├── icons/               # PWA icons (SVG)
 └── favicon.svg
@@ -82,7 +89,7 @@ Later phases:
 0. **Foundation** — Firebase + PWA + clean app shell ✅
 1. **Identity & Profiles** — onboarding + profile pages ✅
 2. **Social Feed** — posts, likes, comments, hashtags, Cloudinary images ✅
-3. **Network & DMs** — follow / connect, real-time messaging
+3. **Network & DMs** — people directory, follow, public profiles, real-time DMs ✅
 4. **Startup Pages** — public startup profiles
 5. **Co-founder Match** — smart matching by skills & stage
 6. **AI Advisor** — Gemini chat + idea analysis

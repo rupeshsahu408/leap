@@ -63,16 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const ref = doc(db, 'users', u.uid)
       const snap = await getDoc(ref)
       if (!snap.exists()) {
-        const seed: UserProfile = {
+        await setDoc(ref, {
           uid: u.uid,
           displayName: u.displayName ?? '',
           email: u.email ?? '',
-          photoURL: u.photoURL ?? undefined,
+          photoURL: u.photoURL ?? null,
           onboarded: false,
+          followersCount: 0,
+          followingCount: 0,
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
-        }
-        await setDoc(ref, seed)
+        })
       }
       const liveUnsub = onSnapshot(ref, (s) => {
         setProfile(s.exists() ? (s.data() as UserProfile) : null)

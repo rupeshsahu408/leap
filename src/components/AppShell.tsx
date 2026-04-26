@@ -1,13 +1,13 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Home, Compass, PlusCircle, Users, User } from 'lucide-react'
+import { Home, Users, PlusCircle, MessageCircle, User } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import Logo from './Logo'
 
 const navItems = [
   { to: '/', icon: Home, label: 'Feed', end: true },
-  { to: '/discover', icon: Compass, label: 'Discover' },
-  { to: '/post', icon: PlusCircle, label: 'Post' },
   { to: '/network', icon: Users, label: 'Network' },
+  { to: '/post', icon: PlusCircle, label: 'Post' },
+  { to: '/messages', icon: MessageCircle, label: 'Chats' },
   { to: '/profile', icon: User, label: 'Me' },
 ]
 
