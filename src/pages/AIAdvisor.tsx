@@ -94,9 +94,9 @@ export default function AIAdvisor() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {suggestions.map((s, i) => (
                 <button key={i} onClick={() => send(s)}
-                  style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 20, padding: '8px 14px', color: 'var(--text-secondary)', fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(108,99,255,0.4)'; e.currentTarget.style.color = '#fff' }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-secondary)' }}>
+                  style={{ background: '#fff', border: '1px solid var(--border-strong)', borderRadius: 999, padding: '8px 14px', color: 'var(--text-secondary)', fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.color = 'var(--text-primary)' }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-strong)'; e.currentTarget.style.color = 'var(--text-secondary)' }}>
                   {s}
                 </button>
               ))}
@@ -108,18 +108,18 @@ export default function AIAdvisor() {
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}>
           {messages.map((msg, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, flexDirection: msg.role === 'user' ? 'row-reverse' : 'row' }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: msg.role === 'ai' ? 'var(--gradient)' : 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: msg.role === 'ai' ? 'var(--accent)' : 'var(--bg-soft)', border: msg.role === 'ai' ? 'none' : '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem', flexShrink: 0 }}>
                 {msg.role === 'ai' ? '🤖' : '👤'}
               </div>
               <div style={{ maxWidth: '75%' }}>
                 <div style={{
-                  background: msg.role === 'user' ? 'var(--gradient)' : 'var(--bg-card)',
+                  background: msg.role === 'user' ? 'var(--accent)' : '#ffffff',
                   border: msg.role === 'user' ? 'none' : '1px solid var(--border)',
                   borderRadius: msg.role === 'user' ? '16px 4px 16px 16px' : '4px 16px 16px 16px',
                   padding: '14px 18px',
-                  color: '#fff',
+                  color: msg.role === 'user' ? '#ffffff' : 'var(--text-primary)',
                   fontSize: '0.9rem',
-                  lineHeight: 1.7
+                  lineHeight: 1.65
                 }} dangerouslySetInnerHTML={{ __html: formatText(msg.text) }} />
                 <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: 4, textAlign: msg.role === 'user' ? 'right' : 'left' }}>{msg.time}</div>
               </div>
@@ -127,10 +127,10 @@ export default function AIAdvisor() {
           ))}
           {loading && (
             <div style={{ display: 'flex', gap: 12 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--gradient)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🤖</div>
-              <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '4px 16px 16px 16px', padding: '14px 18px', display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>🤖</div>
+              <div style={{ background: '#ffffff', border: '1px solid var(--border)', borderRadius: '4px 16px 16px 16px', padding: '14px 18px', display: 'flex', gap: 6, alignItems: 'center' }}>
                 {[0,1,2].map(j => (
-                  <div key={j} style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)', animation: `pulse 1s ${j * 0.2}s infinite` }} />
+                  <div key={j} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--text-muted)' }} />
                 ))}
               </div>
             </div>
@@ -139,13 +139,13 @@ export default function AIAdvisor() {
         </div>
 
         {/* Input */}
-        <form onSubmit={handleSubmit} style={{ padding: '20px 32px', borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
+        <form onSubmit={handleSubmit} style={{ padding: '20px 32px', borderTop: '1px solid var(--border)', background: '#ffffff' }}>
           <div style={{ display: 'flex', gap: 12 }}>
             <input
               value={input}
               onChange={e => setInput(e.target.value)}
               placeholder="Ask your startup question…"
-              style={{ flex: 1, background: 'var(--bg-dark)', border: '1px solid var(--border)', borderRadius: 12, padding: '14px 18px', color: '#fff', fontFamily: 'inherit', fontSize: '0.95rem' }}
+              style={{ flex: 1, background: '#ffffff', border: '1px solid var(--border-strong)', borderRadius: 12, padding: '14px 18px', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: '0.95rem' }}
               disabled={loading}
             />
             <button type="submit" className="btn-primary" disabled={loading || !input.trim()} style={{ padding: '0 24px', minWidth: 80 }}>

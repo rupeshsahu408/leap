@@ -90,7 +90,7 @@ export default function Community() {
                   <div style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>{e.desc}</div>
                 </div>
                 <div>
-                  <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', padding: '4px 12px', borderRadius: 4, whiteSpace: 'nowrap' }}>{e.type}</span>
+                  <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', padding: '4px 12px', borderRadius: 4, whiteSpace: 'nowrap' }}>{e.type}</span>
                 </div>
               </div>
             ))}
@@ -114,7 +114,7 @@ export default function Community() {
                     <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{a.role}</div>
                   </div>
                 </div>
-                <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', padding: '4px 12px', borderRadius: 4 }}>{a.batch}</span>
+                <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.1em', padding: '4px 12px', borderRadius: 4 }}>{a.batch}</span>
               </div>
             ))}
           </div>

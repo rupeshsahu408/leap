@@ -78,10 +78,10 @@ export default function CoFounders() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
+        <div style={{ display: 'flex', gap: 4, marginBottom: 28, background: '#ffffff', border: '1px solid var(--border)', borderRadius: 12, padding: 4, width: 'fit-content' }}>
           {([['discover', 'Discover People'], ['requests', `Requests (${requests.length})`]] as [string, string][]).map(([tab, label]) => (
             <button key={tab} onClick={() => setActiveTab(tab as 'discover' | 'requests')}
-              style={{ padding: '8px 20px', borderRadius: 8, background: activeTab === tab ? 'var(--gradient)' : 'transparent', color: '#fff', fontWeight: 600, fontSize: '0.9rem', border: 'none', cursor: 'pointer' }}>
+              style={{ padding: '8px 20px', borderRadius: 8, background: activeTab === tab ? 'var(--accent)' : 'transparent', color: activeTab === tab ? '#ffffff' : 'var(--text-secondary)', fontWeight: 600, fontSize: '0.9rem', border: 'none', cursor: 'pointer' }}>
               {label}
             </button>
           ))}
@@ -93,7 +93,7 @@ export default function CoFounders() {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search by name, skill, location…"
-              style={{ width: '100%', background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 18px', color: '#fff', fontFamily: 'inherit', fontSize: '0.95rem', marginBottom: 24 }}
+              style={{ width: '100%', background: '#ffffff', border: '1px solid var(--border-strong)', borderRadius: 10, padding: '12px 18px', color: 'var(--text-primary)', fontFamily: 'inherit', fontSize: '0.95rem', marginBottom: 24 }}
             />
 
             {filtered.length === 0 ? (
@@ -104,18 +104,18 @@ export default function CoFounders() {
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
                 {filtered.map(person => (
-                  <div key={person.id} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, transition: 'all 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(108,99,255,0.3)'}
+                  <div key={person.id} style={{ background: '#ffffff', border: '1px solid var(--border)', borderRadius: 16, padding: 24, transition: 'all 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--border-strong)'}
                     onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                      <div style={{ width: 48, height: 48, background: 'var(--gradient)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
+                      <div style={{ width: 48, height: 48, background: 'var(--accent)', color: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.1rem', flexShrink: 0 }}>
                         {person.name[0]}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700 }}>{person.name}</div>
+                        <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{person.name}</div>
                         {person.location && <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>📍 {person.location}</div>}
                       </div>
-                      <span style={{ marginLeft: 'auto', background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4, textTransform: 'uppercase' }}>{person.role}</span>
+                      <span style={{ marginLeft: 'auto', background: 'var(--accent-soft)', color: 'var(--text-secondary)', border: '1px solid var(--accent-border)', fontSize: '0.7rem', fontWeight: 600, padding: '3px 8px', borderRadius: 999, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{person.role}</span>
                     </div>
 
                     {person.bio && <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, marginBottom: 14 }}>{person.bio.slice(0, 120)}{person.bio.length > 120 ? '…' : ''}</p>}
@@ -123,12 +123,12 @@ export default function CoFounders() {
                     {person.skills && person.skills.length > 0 && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
                         {person.skills.slice(0, 4).map((s, i) => (
-                          <span key={i} style={{ background: 'var(--bg-dark)', border: '1px solid var(--border)', borderRadius: 4, padding: '3px 8px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{s}</span>
+                          <span key={i} style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 999, padding: '3px 10px', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{s}</span>
                         ))}
                       </div>
                     )}
 
-                    {person.stage && <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: 16 }}>Stage: <strong style={{ color: '#fff' }}>{person.stage}</strong></div>}
+                    {person.stage && <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: 16 }}>Stage: <strong style={{ color: 'var(--text-primary)' }}>{person.stage}</strong></div>}
 
                     <button
                       onClick={() => connect(person.id)}

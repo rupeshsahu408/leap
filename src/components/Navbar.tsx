@@ -52,7 +52,7 @@ export default function Navbar() {
 
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <Link to="/dashboard" className="btn-join" style={{ display: 'flex', background: 'rgba(108,99,255,0.15)', border: '1px solid rgba(108,99,255,0.3)', boxShadow: 'none' }}>
+            <Link to="/dashboard" className="btn-join" style={{ display: 'flex' }}>
               Dashboard
             </Link>
             <button

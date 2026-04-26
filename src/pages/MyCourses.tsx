@@ -74,13 +74,13 @@ export default function MyCourses() {
                     <div style={{ fontWeight: 700 }}>{e.course_name}</div>
                     <span style={{ color: 'var(--accent)', fontWeight: 700, fontSize: '0.9rem' }}>{e.progress}% Complete</span>
                   </div>
-                  <div style={{ height: 8, background: 'var(--bg-dark)', borderRadius: 4, overflow: 'hidden', marginBottom: 14 }}>
-                    <div style={{ height: '100%', width: `${e.progress}%`, background: 'var(--gradient)', borderRadius: 4, transition: 'width 0.4s' }} />
+                  <div style={{ height: 6, background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 999, overflow: 'hidden', marginBottom: 14 }}>
+                    <div style={{ height: '100%', width: `${e.progress}%`, background: 'var(--accent)', borderRadius: 999, transition: 'width 0.4s' }} />
                   </div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     {[0, 25, 50, 75, 100].map(p => (
                       <button key={p} onClick={() => updateProgress(e.id, p)}
-                        style={{ padding: '5px 14px', borderRadius: 6, background: e.progress === p ? 'var(--gradient)' : 'var(--bg-dark)', border: `1px solid ${e.progress === p ? 'transparent' : 'var(--border)'}`, color: '#fff', fontSize: '0.8rem', cursor: 'pointer' }}>
+                        style={{ padding: '5px 14px', borderRadius: 6, background: e.progress === p ? 'var(--accent)' : '#ffffff', border: `1px solid ${e.progress === p ? 'var(--accent)' : 'var(--border-strong)'}`, color: e.progress === p ? '#ffffff' : 'var(--text-secondary)', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600 }}>
                         {p}%
                       </button>
                     ))}
@@ -96,7 +96,7 @@ export default function MyCourses() {
           {allCourses.map(course => {
             const isEnrolled = enrolledNames.has(course.name)
             return (
-              <div key={course.name} style={{ background: 'var(--bg-card)', border: `1px solid ${isEnrolled ? 'rgba(108,99,255,0.4)' : 'var(--border)'}`, borderRadius: 16, padding: 24 }}>
+              <div key={course.name} style={{ background: 'var(--bg-card)', border: `1px solid ${isEnrolled ? 'var(--text-secondary)' : 'var(--border)'}`, borderRadius: 16, padding: 24 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
                   <span style={{ fontSize: '2rem' }}>{course.icon}</span>
                   <div>

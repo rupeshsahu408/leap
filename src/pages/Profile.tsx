@@ -59,7 +59,7 @@ export default function Profile() {
               </div>
               <div style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: 4 }}>{user?.name}</div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 12 }}>{user?.email}</div>
-              <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 4, textTransform: 'uppercase' }}>{user?.role}</span>
+              <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.75rem', fontWeight: 700, padding: '4px 12px', borderRadius: 4, textTransform: 'uppercase' }}>{user?.role}</span>
             </div>
           </div>
 
@@ -100,7 +100,7 @@ export default function Profile() {
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
                 {skillOptions.map(s => (
                   <button type="button" key={s} onClick={() => toggleSkill(s)}
-                    style={{ padding: '7px 14px', borderRadius: 20, background: skills.includes(s) ? 'var(--gradient)' : 'var(--bg-dark)', border: `1px solid ${skills.includes(s) ? 'transparent' : 'var(--border)'}`, color: '#fff', fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.2s' }}>
+                    style={{ padding: '7px 14px', borderRadius: 999, background: skills.includes(s) ? 'var(--accent)' : '#ffffff', border: `1px solid ${skills.includes(s) ? 'var(--accent)' : 'var(--border-strong)'}`, color: skills.includes(s) ? '#ffffff' : 'var(--text-secondary)', fontSize: '0.8rem', cursor: 'pointer', transition: 'all 0.15s', fontWeight: 600 }}>
                     {s}
                   </button>
                 ))}

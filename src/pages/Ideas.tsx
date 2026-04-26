@@ -133,7 +133,7 @@ export default function Ideas() {
               </div>
               {selectedIdea.description && <p style={{ color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.7 }}>{selectedIdea.description}</p>}
               <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-                {selectedIdea.industry && <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: 4 }}>{selectedIdea.industry}</span>}
+                {selectedIdea.industry && <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: 4 }}>{selectedIdea.industry}</span>}
                 {selectedIdea.stage && <span style={{ background: 'rgba(0,212,255,0.1)', color: 'var(--cyan)', border: '1px solid rgba(0,212,255,0.2)', fontSize: '0.75rem', fontWeight: 700, padding: '4px 10px', borderRadius: 4 }}>{selectedIdea.stage}</span>}
               </div>
 
@@ -156,20 +156,20 @@ export default function Ideas() {
         {ideas.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: 'var(--text-muted)' }}>
             <div style={{ fontSize: '3rem', marginBottom: 16 }}>💡</div>
-            <h3 style={{ fontWeight: 700, marginBottom: 8, color: '#fff' }}>No ideas yet</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>No ideas yet</h3>
             <p>Add your first startup idea and let AI analyze it for you!</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
             {ideas.map(idea => (
               <div key={idea.id} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 24, cursor: 'pointer', transition: 'all 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(108,99,255,0.4)'}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--text-secondary)'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}
                 onClick={() => setSelectedIdea(idea)}>
                 <h3 style={{ fontWeight: 700, marginBottom: 10, fontSize: '1rem' }}>{idea.title}</h3>
                 {idea.description && <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: 14, lineHeight: 1.6 }}>{idea.description.slice(0, 100)}…</p>}
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
-                  {idea.industry && <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4 }}>{idea.industry}</span>}
+                  {idea.industry && <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4 }}>{idea.industry}</span>}
                   {idea.stage && <span style={{ background: 'rgba(0,212,255,0.1)', color: 'var(--cyan)', border: '1px solid rgba(0,212,255,0.2)', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4 }}>{idea.stage}</span>}
                   {idea.is_public && <span style={{ background: 'rgba(0,255,100,0.1)', color: '#00ff88', border: '1px solid rgba(0,255,100,0.2)', fontSize: '0.7rem', fontWeight: 700, padding: '3px 8px', borderRadius: 4 }}>Public</span>}
                 </div>

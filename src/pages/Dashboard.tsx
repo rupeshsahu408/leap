@@ -39,7 +39,7 @@ export default function Dashboard() {
           ].map((s, i) => (
             <div key={i} style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: '24px 20px' }}>
               <div style={{ fontSize: '1.5rem', marginBottom: 8 }}>{s.icon}</div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 900, background: 'var(--gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: 1 }}>{s.value}</div>
+              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1, letterSpacing: '-0.025em' }}>{s.value}</div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginTop: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</div>
             </div>
           ))}
@@ -56,8 +56,8 @@ export default function Dashboard() {
                 { to: '/dashboard/cofounders', icon: '🤝', label: 'Find Co-founders', desc: 'Connect with builders' },
                 { to: '/dashboard/courses', icon: '📚', label: 'Enroll in a Course', desc: 'Learn from industry experts' },
               ].map((a, i) => (
-                <Link key={i} to={a.to} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 14px', background: 'var(--bg-dark)', border: '1px solid var(--border)', borderRadius: 10, transition: 'all 0.2s', textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(108,99,255,0.4)')}
+                <Link key={i} to={a.to} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 14px', background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 10, transition: 'border-color 0.15s', textDecoration: 'none', color: 'var(--text-primary)' }}
+                  onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--border-strong)')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
                   <span style={{ fontSize: '1.3rem' }}>{a.icon}</span>
                   <div>
@@ -74,26 +74,26 @@ export default function Dashboard() {
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 16, padding: 28 }}>
             <h3 style={{ fontWeight: 700, marginBottom: 20, fontSize: '1rem' }}>Your Profile</h3>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-              <div style={{ width: 60, height: 60, background: 'var(--gradient)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, flexShrink: 0 }}>
+              <div style={{ width: 60, height: 60, background: 'var(--accent)', color: '#ffffff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', fontWeight: 700, flexShrink: 0 }}>
                 {user?.name?.[0]}
               </div>
               <div>
                 <div style={{ fontWeight: 700, fontSize: '1.1rem' }}>{user?.name}</div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{user?.email}</div>
                 <div style={{ marginTop: 4 }}>
-                  <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4, textTransform: 'uppercase' }}>{user?.role}</span>
+                  <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4, textTransform: 'uppercase' }}>{user?.role}</span>
                 </div>
               </div>
             </div>
             {!user?.bio && (
-              <div style={{ background: 'rgba(108,99,255,0.08)', border: '1px solid rgba(108,99,255,0.15)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
+              <div style={{ background: 'var(--bg-soft)', border: '1px solid var(--accent-border)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: 10 }}>Complete your profile to get better co-founder matches!</p>
                 <Link to="/dashboard/profile" className="btn-primary" style={{ fontSize: '0.85rem', padding: '8px 16px' }}>Complete Profile →</Link>
               </div>
             )}
             {requests.length > 0 && (
-              <div style={{ background: 'rgba(255,180,0,0.08)', border: '1px solid rgba(255,180,0,0.2)', borderRadius: 10, padding: 14 }}>
-                <p style={{ fontSize: '0.85rem', color: '#ffd700', fontWeight: 600 }}>🔔 {requests.length} new co-founder connection request{requests.length > 1 ? 's' : ''}!</p>
+              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 10, padding: 14 }}>
+                <p style={{ fontSize: '0.85rem', color: '#92400e', fontWeight: 600 }}>🔔 {requests.length} new co-founder connection request{requests.length > 1 ? 's' : ''}!</p>
                 <Link to="/dashboard/cofounders" style={{ color: 'var(--accent)', fontSize: '0.8rem', fontWeight: 600 }}>View requests →</Link>
               </div>
             )}
@@ -109,9 +109,9 @@ export default function Dashboard() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
               {ideas.slice(0, 3).map((idea) => (
-                <div key={idea.id} style={{ background: 'var(--bg-dark)', border: '1px solid var(--border)', borderRadius: 12, padding: 16 }}>
+                <div key={idea.id} style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 12, padding: 16 }}>
                   <div style={{ fontWeight: 600, marginBottom: 6, fontSize: '0.9rem' }}>{idea.title}</div>
-                  {idea.industry && <span style={{ background: 'rgba(108,99,255,0.1)', color: 'var(--accent)', border: '1px solid rgba(108,99,255,0.2)', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4 }}>{idea.industry}</span>}
+                  {idea.industry && <span style={{ background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--accent-border)', fontSize: '0.7rem', fontWeight: 700, padding: '2px 8px', borderRadius: 4 }}>{idea.industry}</span>}
                 </div>
               ))}
             </div>
@@ -130,8 +130,8 @@ export default function Dashboard() {
                 <span style={{ fontSize: '1.2rem' }}>📚</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: 6 }}>{e.course_name}</div>
-                  <div style={{ height: 6, background: 'var(--bg-dark)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${e.progress}%`, background: 'var(--gradient)', borderRadius: 3, transition: 'width 0.3s' }} />
+                  <div style={{ height: 6, background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 999, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${e.progress}%`, background: 'var(--accent)', borderRadius: 999, transition: 'width 0.3s' }} />
                   </div>
                 </div>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', minWidth: 35 }}>{e.progress}%</span>

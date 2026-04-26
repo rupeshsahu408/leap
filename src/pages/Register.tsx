@@ -60,8 +60,8 @@ export default function Register() {
               <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Min. 6 characters" required />
             </div>
 
-            <div style={{ background: 'rgba(108,99,255,0.08)', border: '1px solid rgba(108,99,255,0.15)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-              By joining, you get access to: <strong style={{ color: '#fff' }}>AI Startup Advisor</strong>, <strong style={{ color: '#fff' }}>Co-founder Matching</strong>, <strong style={{ color: '#fff' }}>Funding Hub</strong>, and all LEAP courses.
+            <div style={{ background: 'var(--bg-soft)', border: '1px solid var(--border)', borderRadius: 10, padding: '12px 16px', marginBottom: 20, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              By joining, you get access to: <strong style={{ color: 'var(--text-primary)' }}>AI Startup Advisor</strong>, <strong style={{ color: 'var(--text-primary)' }}>Co-founder Matching</strong>, <strong style={{ color: 'var(--text-primary)' }}>Funding Hub</strong>, and all LEAP courses.
             </div>
 
             <button type="submit" className="btn-primary" disabled={loading}
