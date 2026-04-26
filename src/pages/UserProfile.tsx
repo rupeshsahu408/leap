@@ -4,18 +4,22 @@ import { ArrowLeft, MapPin, Briefcase, MessageCircle } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { fetchUser, type PublicUser } from '../lib/social'
 import { ensureConversation, conversationId } from '../lib/messaging'
+import { fetchStartupsByMember, type Startup } from '../lib/startups'
 import Avatar from '../components/Avatar'
 import FollowButton from '../components/FollowButton'
+import StartupCard from '../components/StartupCard'
 
 export default function UserProfile() {
   const { uid = '' } = useParams()
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const [data, setData] = useState<PublicUser | null | undefined>(undefined)
+  const [ventures, setVentures] = useState<Startup[]>([])
   const [opening, setOpening] = useState(false)
 
   useEffect(() => {
     fetchUser(uid).then(setData)
+    fetchStartupsByMember(uid).then(setVentures)
   }, [uid])
 
   if (data === undefined) return <div className="text-sm text-zinc-500">Loading…</div>
@@ -124,6 +128,16 @@ export default function UserProfile() {
           <div className="flex flex-wrap gap-2">
             {data.lookingFor.map((s) => (
               <span key={s} className="px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-sm border border-brand-200">{s}</span>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {ventures.length > 0 && (
+        <Section title="Ventures">
+          <div className="space-y-3">
+            {ventures.map((s) => (
+              <StartupCard key={s.id} startup={s} />
             ))}
           </div>
         </Section>

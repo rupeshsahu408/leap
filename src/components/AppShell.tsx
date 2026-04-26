@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Home, Users, PlusCircle, MessageCircle, User } from 'lucide-react'
+import { Home, Users, PlusCircle, MessageCircle, User, Rocket } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import Logo from './Logo'
 
@@ -9,6 +9,10 @@ const navItems = [
   { to: '/post', icon: PlusCircle, label: 'Post' },
   { to: '/messages', icon: MessageCircle, label: 'Chats' },
   { to: '/profile', icon: User, label: 'Me' },
+]
+
+const sidebarExtras = [
+  { to: '/startups', icon: Rocket, label: 'Ventures' },
 ]
 
 export default function AppShell() {
@@ -23,7 +27,7 @@ export default function AppShell() {
           <Logo />
         </div>
         <nav className="flex-1 px-3 space-y-1">
-          {navItems.map(({ to, icon: Icon, label, end }) => (
+          {[...navItems, ...sidebarExtras].map(({ to, icon: Icon, label, end }) => (
             <NavLink
               key={to}
               to={to}

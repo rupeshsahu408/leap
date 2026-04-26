@@ -12,6 +12,10 @@ import Network from './pages/Network'
 import UserProfile from './pages/UserProfile'
 import Messages from './pages/Messages'
 import Conversation from './pages/Conversation'
+import Startups from './pages/Startups'
+import StartupNew from './pages/StartupNew'
+import StartupView from './pages/StartupView'
+import StartupEdit from './pages/StartupEdit'
 import AppShell from './components/AppShell'
 
 function Loading() {
@@ -74,6 +78,10 @@ export default function App() {
             <Route path="u/:uid" element={<UserProfile />} />
             <Route path="messages" element={<Messages />} />
             <Route path="messages/:id" element={<Conversation />} />
+            <Route path="startups" element={<Startups />} />
+            <Route path="startups/new" element={<StartupNew />} />
+            <Route path="startups/:id" element={<StartupView />} />
+            <Route path="startups/:id/edit" element={<StartupEdit />} />
             <Route path="profile" element={<Profile />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

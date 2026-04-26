@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Search, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Rocket, Search, Users } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { fetchPeople, fetchFollowing, type PublicUser } from '../lib/social'
 import UserCard from '../components/UserCard'
@@ -44,6 +45,20 @@ export default function Network() {
           Find founders, follow people you want to learn from, and message them directly.
         </p>
       </div>
+
+      <Link
+        to="/startups"
+        className="flex items-center gap-3 rounded-2xl border border-[var(--color-line)] bg-gradient-to-r from-brand-50 to-white p-4 hover:shadow-sm transition"
+      >
+        <div className="size-10 rounded-xl bg-brand-500 text-white grid place-items-center">
+          <Rocket className="size-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-sm">Browse ventures</div>
+          <div className="text-xs text-zinc-500">See what other founders are building.</div>
+        </div>
+        <span className="text-brand-600 text-sm font-medium">Open →</span>
+      </Link>
 
       <div className="flex bg-zinc-100 rounded-xl p-1">
         <TabBtn active={tab === 'discover'} onClick={() => setTab('discover')}>

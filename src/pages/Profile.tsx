@@ -1,8 +1,18 @@
-import { MapPin, Briefcase } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { MapPin, Briefcase, Plus, Rocket } from 'lucide-react'
 import { useAuth } from '../lib/auth'
+import { fetchStartupsByMember, type Startup } from '../lib/startups'
+import StartupCard from '../components/StartupCard'
 
 export default function Profile() {
-  const { profile, signOut } = useAuth()
+  const { profile, user, signOut } = useAuth()
+  const [ventures, setVentures] = useState<Startup[] | null>(null)
+
+  useEffect(() => {
+    if (!user) return
+    fetchStartupsByMember(user.uid).then(setVentures)
+  }, [user])
 
   if (!profile) return null
 
@@ -47,6 +57,43 @@ export default function Profile() {
         )}
       </div>
 
+      <Section
+        title="My ventures"
+        action={
+          <Link
+            to="/startups/new"
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand-600 hover:underline"
+          >
+            <Plus className="size-4" /> New
+          </Link>
+        }
+      >
+        {ventures === null ? (
+          <div className="text-sm text-zinc-400">Loading…</div>
+        ) : ventures.length === 0 ? (
+          <div className="text-center py-4">
+            <div className="size-10 mx-auto grid place-items-center rounded-xl bg-brand-50 text-brand-600">
+              <Rocket className="size-5" />
+            </div>
+            <p className="text-sm text-zinc-500 mt-2">
+              You haven't listed a venture yet.
+            </p>
+            <Link
+              to="/startups/new"
+              className="inline-block mt-3 text-sm font-medium text-brand-600 hover:underline"
+            >
+              Create your first venture →
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {ventures.map((s) => (
+              <StartupCard key={s.id} startup={s} />
+            ))}
+          </div>
+        )}
+      </Section>
+
       {!!profile.skills?.length && (
         <Section title="Skills">
           <div className="flex flex-wrap gap-2">
@@ -81,10 +128,21 @@ export default function Profile() {
   )
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  action,
+  children,
+}: {
+  title: string
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <div className="rounded-2xl border border-[var(--color-line)] bg-white p-6">
-      <h2 className="font-semibold mb-3">{title}</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-semibold">{title}</h2>
+        {action}
+      </div>
       {children}
     </div>
   )

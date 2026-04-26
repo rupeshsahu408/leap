@@ -31,6 +31,7 @@ src/
 │   ├── posts.ts         # Firestore CRUD: posts, likes, comments, hashtag query
 │   ├── social.ts        # Users directory + follow/unfollow + counts
 │   ├── messaging.ts     # Conversations + real-time messages
+│   ├── startups.ts      # Startup CRUD + member queries
 │   ├── cloudinary.ts    # Unsigned image upload helper
 │   └── time.ts          # timeAgo() formatter
 ├── components/
@@ -39,6 +40,8 @@ src/
 │   ├── Avatar.tsx
 │   ├── FollowButton.tsx
 │   ├── UserCard.tsx
+│   ├── StartupCard.tsx
+│   ├── StartupForm.tsx  # Shared create/edit form
 │   ├── HashtagText.tsx  # Renders #hashtags as Links
 │   ├── PostComposer.tsx # Text + optional image, hashtag-aware
 │   └── PostCard.tsx     # Post + likes + inline comments
@@ -52,7 +55,11 @@ src/
     ├── Network.tsx      # Discover + Following tabs, search
     ├── UserProfile.tsx  # Public profile at /u/:uid (follow + message)
     ├── Messages.tsx     # Conversation list at /messages
-    └── Conversation.tsx # 1-on-1 chat at /messages/:id
+    ├── Conversation.tsx # 1-on-1 chat at /messages/:id
+    ├── Startups.tsx     # Ventures directory at /startups
+    ├── StartupNew.tsx   # Create venture form
+    ├── StartupView.tsx  # Public venture page at /startups/:id
+    └── StartupEdit.tsx  # Owner-only edit + delete
 public/
 ├── icons/               # PWA icons (SVG)
 └── favicon.svg
@@ -90,7 +97,7 @@ Later phases:
 1. **Identity & Profiles** — onboarding + profile pages ✅
 2. **Social Feed** — posts, likes, comments, hashtags, Cloudinary images ✅
 3. **Network & DMs** — people directory, follow, public profiles, real-time DMs ✅
-4. **Startup Pages** — public startup profiles
+4. **Startup Pages** — public startup profiles, directory, ownership/edit ✅
 5. **Co-founder Match** — smart matching by skills & stage
 6. **AI Advisor** — Gemini chat + idea analysis
 7. **Investors & Funding** — pitch + warm intros
