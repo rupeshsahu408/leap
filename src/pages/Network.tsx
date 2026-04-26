@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Rocket, Search, Users } from 'lucide-react'
+import { Rocket, Search, Sparkles, Users } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { fetchPeople, fetchFollowing, type PublicUser } from '../lib/social'
 import UserCard from '../components/UserCard'
@@ -46,19 +46,34 @@ export default function Network() {
         </p>
       </div>
 
-      <Link
-        to="/startups"
-        className="flex items-center gap-3 rounded-2xl border border-[var(--color-line)] bg-gradient-to-r from-brand-50 to-white p-4 hover:shadow-sm transition"
-      >
-        <div className="size-10 rounded-xl bg-brand-500 text-white grid place-items-center">
-          <Rocket className="size-5" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm">Browse ventures</div>
-          <div className="text-xs text-zinc-500">See what other founders are building.</div>
-        </div>
-        <span className="text-brand-600 text-sm font-medium">Open →</span>
-      </Link>
+      <div className="grid sm:grid-cols-2 gap-3">
+        <Link
+          to="/match"
+          className="flex items-center gap-3 rounded-2xl border border-[var(--color-line)] bg-gradient-to-br from-brand-500 to-brand-600 text-white p-4 hover:shadow-md transition"
+        >
+          <div className="size-10 rounded-xl bg-white/20 grid place-items-center backdrop-blur">
+            <Sparkles className="size-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-sm">Co-founder Match</div>
+            <div className="text-xs text-white/85">Founders ranked for you.</div>
+          </div>
+          <span className="text-white/90 text-sm font-medium">Open →</span>
+        </Link>
+        <Link
+          to="/startups"
+          className="flex items-center gap-3 rounded-2xl border border-[var(--color-line)] bg-white p-4 hover:shadow-sm transition"
+        >
+          <div className="size-10 rounded-xl bg-brand-50 text-brand-600 grid place-items-center">
+            <Rocket className="size-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-sm">Browse ventures</div>
+            <div className="text-xs text-zinc-500">See what others are building.</div>
+          </div>
+          <span className="text-brand-600 text-sm font-medium">Open →</span>
+        </Link>
+      </div>
 
       <div className="flex bg-zinc-100 rounded-xl p-1">
         <TabBtn active={tab === 'discover'} onClick={() => setTab('discover')}>

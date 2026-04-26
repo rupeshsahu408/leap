@@ -32,6 +32,7 @@ src/
 │   ├── social.ts        # Users directory + follow/unfollow + counts
 │   ├── messaging.ts     # Conversations + real-time messages
 │   ├── startups.ts      # Startup CRUD + member queries
+│   ├── match.ts         # Co-founder scoring + ranking (client-side)
 │   ├── cloudinary.ts    # Unsigned image upload helper
 │   └── time.ts          # timeAgo() formatter
 ├── components/
@@ -42,6 +43,7 @@ src/
 │   ├── UserCard.tsx
 │   ├── StartupCard.tsx
 │   ├── StartupForm.tsx  # Shared create/edit form
+│   ├── MatchCard.tsx    # Co-founder match recommendation card
 │   ├── HashtagText.tsx  # Renders #hashtags as Links
 │   ├── PostComposer.tsx # Text + optional image, hashtag-aware
 │   └── PostCard.tsx     # Post + likes + inline comments
@@ -59,7 +61,8 @@ src/
     ├── Startups.tsx     # Ventures directory at /startups
     ├── StartupNew.tsx   # Create venture form
     ├── StartupView.tsx  # Public venture page at /startups/:id
-    └── StartupEdit.tsx  # Owner-only edit + delete
+    ├── StartupEdit.tsx  # Owner-only edit + delete
+    └── Match.tsx        # Co-founder match recommendations at /match
 public/
 ├── icons/               # PWA icons (SVG)
 └── favicon.svg
@@ -98,7 +101,7 @@ Later phases:
 2. **Social Feed** — posts, likes, comments, hashtags, Cloudinary images ✅
 3. **Network & DMs** — people directory, follow, public profiles, real-time DMs ✅
 4. **Startup Pages** — public startup profiles, directory, ownership/edit ✅
-5. **Co-founder Match** — smart matching by skills & stage
+5. **Co-founder Match** — smart ranking by complementary skills, stage, intent ✅
 6. **AI Advisor** — Gemini chat + idea analysis
 7. **Investors & Funding** — pitch + warm intros
 8. **Communities & Events** — groups, meetups, AMAs
