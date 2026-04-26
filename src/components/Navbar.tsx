@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -47,9 +50,27 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <Link to="/contact" className="btn-join" style={{ display: 'flex' }}>
-          Join Now
-        </Link>
+        {user ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Link to="/dashboard" className="btn-join" style={{ display: 'flex', background: 'rgba(108,99,255,0.15)', border: '1px solid rgba(108,99,255,0.3)', boxShadow: 'none' }}>
+              Dashboard
+            </Link>
+            <button
+              onClick={() => { logout(); navigate('/') }}
+              style={{ background: 'none', color: 'var(--text-secondary)', padding: '8px 12px', borderRadius: 8, fontSize: '0.85rem', cursor: 'pointer', border: '1px solid var(--border)' }}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Link to="/login" style={{ color: 'var(--text-secondary)', padding: '10px 16px', fontSize: '0.9rem', fontWeight: 500 }}>
+              Sign In
+            </Link>
+            <Link to="/register" className="btn-join" style={{ display: 'flex' }}>
+              Join Now
+            </Link>
+          </div>
+        )}
 
         <button
           className="hamburger"
@@ -72,9 +93,21 @@ export default function Navbar() {
             {link.label}
           </Link>
         ))}
-        <Link to="/contact" className="btn-join" style={{ marginTop: 8 }}>
-          Join Now
-        </Link>
+        {user ? (
+          <>
+            <Link to="/dashboard" className="btn-join" style={{ marginTop: 8, display: 'block', textAlign: 'center' }}>
+              Dashboard
+            </Link>
+            <button onClick={() => { logout(); navigate('/') }} style={{ background: 'none', color: 'var(--text-secondary)', padding: '12px 16px', fontSize: '0.95rem', width: '100%', textAlign: 'left', cursor: 'pointer', border: 'none' }}>
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" style={{ color: 'var(--text-secondary)', padding: '12px 16px', display: 'block' }}>Sign In</Link>
+            <Link to="/register" className="btn-join" style={{ marginTop: 4, display: 'block', textAlign: 'center' }}>Join Now</Link>
+          </>
+        )}
       </div>
     </>
   )
