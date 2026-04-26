@@ -15,6 +15,7 @@ A social network and platform built specifically for entrepreneurs to find co-fo
 ### Backend / Data
 - **Firebase Auth** (Google sign-in)
 - **Firebase Firestore** (real-time database, accessed directly from client)
+- **Cloudinary** (image storage — unsigned uploads from the client)
 - **Google Gemini AI** (`@google/generative-ai`) — wired up in a later phase
 
 ## Project Structure
@@ -26,15 +27,25 @@ src/
 ├── index.css            # Tailwind v4 + theme
 ├── lib/
 │   ├── firebase.ts      # Firebase init (auth, firestore, providers)
-│   └── auth.tsx         # AuthProvider + useAuth() hook
+│   ├── auth.tsx         # AuthProvider + useAuth() hook
+│   ├── posts.ts         # Firestore CRUD: posts, likes, comments, hashtag query
+│   ├── cloudinary.ts    # Unsigned image upload helper
+│   └── time.ts          # timeAgo() formatter
 ├── components/
 │   ├── AppShell.tsx     # Layout (desktop sidebar + mobile bottom nav)
-│   └── Logo.tsx
+│   ├── Logo.tsx
+│   ├── Avatar.tsx
+│   ├── HashtagText.tsx  # Renders #hashtags as Links
+│   ├── PostComposer.tsx # Text + optional image, hashtag-aware
+│   └── PostCard.tsx     # Post + likes + inline comments
 └── pages/
     ├── SignIn.tsx       # Google sign-in
     ├── Onboarding.tsx   # 3-step profile setup
-    ├── Feed.tsx         # Home feed (placeholder for Phase 2)
-    └── Profile.tsx      # Current user profile
+    ├── Feed.tsx         # Home feed — composer + real-time post list
+    ├── Compose.tsx      # Full-page composer (mobile "Post" tab)
+    ├── Tag.tsx          # Filtered feed for /tag/:tag
+    ├── Profile.tsx      # Current user profile
+    └── ComingSoon.tsx   # Stub for /discover and /network (Phase 3/4)
 public/
 ├── icons/               # PWA icons (SVG)
 └── favicon.svg
@@ -70,7 +81,7 @@ Later phases:
 ## Roadmap (phased build)
 0. **Foundation** — Firebase + PWA + clean app shell ✅
 1. **Identity & Profiles** — onboarding + profile pages ✅
-2. **Social Feed** — posts, likes, comments, hashtags
+2. **Social Feed** — posts, likes, comments, hashtags, Cloudinary images ✅
 3. **Network & DMs** — follow / connect, real-time messaging
 4. **Startup Pages** — public startup profiles
 5. **Co-founder Match** — smart matching by skills & stage

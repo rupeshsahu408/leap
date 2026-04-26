@@ -1,53 +1,59 @@
+import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
-import { useAuth } from '../lib/auth'
+import { type Post, subscribeFeed } from '../lib/posts'
+import PostComposer from '../components/PostComposer'
+import PostCard from '../components/PostCard'
 
 export default function Feed() {
-  const { profile } = useAuth()
+  const [posts, setPosts] = useState<Post[] | null>(null)
+
+  useEffect(() => {
+    return subscribeFeed(setPosts)
+  }, [])
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl">
-          Welcome, <span className="text-brand-600">{profile?.displayName?.split(' ')[0] ?? 'founder'}</span>.
-        </h1>
-        <p className="text-zinc-500 mt-1">
-          Your feed is being forged. Here's what's coming soon.
-        </p>
-      </div>
+    <div className="space-y-5">
+      <PostComposer />
 
-      <div className="rounded-2xl border border-[var(--color-line)] bg-white p-6 shadow-sm">
-        <div className="flex items-start gap-4">
-          <div className="size-10 grid place-items-center rounded-xl bg-brand-50 text-brand-600 shrink-0">
+      {posts === null && <FeedSkeleton />}
+
+      {posts && posts.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-[var(--color-line)] bg-white p-8 text-center">
+          <div className="size-10 mx-auto grid place-items-center rounded-xl bg-brand-50 text-brand-600">
             <Sparkles className="size-5" />
           </div>
-          <div>
-            <h2 className="font-semibold mb-1">Phase 1 is live: your profile</h2>
-            <p className="text-sm text-zinc-600">
-              You're signed in and your profile is saved. Up next: the social
-              feed (posts, likes, comments) and discovering other founders.
-            </p>
-          </div>
+          <h2 className="mt-3 font-semibold">No posts yet</h2>
+          <p className="text-sm text-zinc-500 mt-1">
+            Be the first to share what you're building. Use #hashtags to help others find your post.
+          </p>
         </div>
-      </div>
+      )}
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        {ROADMAP.map((r) => (
-          <div key={r.title} className="rounded-2xl border border-[var(--color-line)] bg-white p-5">
-            <div className="text-xs font-medium text-brand-600 mb-1">{r.phase}</div>
-            <div className="font-semibold mb-1">{r.title}</div>
-            <div className="text-sm text-zinc-500">{r.desc}</div>
-          </div>
-        ))}
-      </div>
+      {posts?.map((p) => (
+        <PostCard key={p.id} post={p} />
+      ))}
     </div>
   )
 }
 
-const ROADMAP = [
-  { phase: 'Phase 2', title: 'Social feed', desc: 'Posts, likes, comments, hashtags, trending.' },
-  { phase: 'Phase 3', title: 'Network & DMs', desc: 'Follow, connect, real-time messaging.' },
-  { phase: 'Phase 4', title: 'Startup pages', desc: 'Build a public page for your venture.' },
-  { phase: 'Phase 5', title: 'Co-founder match', desc: 'Smart matches based on skills & stage.' },
-  { phase: 'Phase 6', title: 'AI advisor', desc: 'Gemini-powered idea & pitch coach.' },
-  { phase: 'Phase 7', title: 'Investors', desc: 'Pitch to investors, warm intros.' },
-]
+function FeedSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="rounded-2xl border border-[var(--color-line)] bg-white p-5 animate-pulse">
+          <div className="flex gap-3">
+            <div className="size-10 rounded-full bg-zinc-100" />
+            <div className="flex-1 space-y-2">
+              <div className="h-3 w-1/3 bg-zinc-100 rounded" />
+              <div className="h-3 w-1/4 bg-zinc-100 rounded" />
+            </div>
+          </div>
+          <div className="mt-4 space-y-2">
+            <div className="h-3 bg-zinc-100 rounded" />
+            <div className="h-3 w-4/5 bg-zinc-100 rounded" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
