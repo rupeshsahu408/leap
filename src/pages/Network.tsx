@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Rocket, Search, Sparkles, Users } from 'lucide-react'
+import { Bot, Rocket, Search, Sparkles, Users } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { fetchPeople, fetchFollowing, type PublicUser } from '../lib/social'
 import UserCard from '../components/UserCard'
@@ -61,8 +61,21 @@ export default function Network() {
           <span className="text-white/90 text-sm font-medium">Open →</span>
         </Link>
         <Link
-          to="/startups"
+          to="/advisor"
           className="flex items-center gap-3 rounded-2xl border border-[var(--color-line)] bg-white p-4 hover:shadow-sm transition"
+        >
+          <div className="size-10 rounded-xl bg-brand-50 text-brand-600 grid place-items-center">
+            <Bot className="size-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-sm">AI Advisor</div>
+            <div className="text-xs text-zinc-500">Get tailored startup advice.</div>
+          </div>
+          <span className="text-brand-600 text-sm font-medium">Open →</span>
+        </Link>
+        <Link
+          to="/startups"
+          className="flex items-center gap-3 rounded-2xl border border-[var(--color-line)] bg-white p-4 hover:shadow-sm transition sm:col-span-2"
         >
           <div className="size-10 rounded-xl bg-brand-50 text-brand-600 grid place-items-center">
             <Rocket className="size-5" />

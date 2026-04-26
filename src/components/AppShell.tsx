@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Home, Users, PlusCircle, MessageCircle, User, Rocket, Sparkles } from 'lucide-react'
+import { Home, Users, PlusCircle, MessageCircle, User, Rocket, Sparkles, Bot } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import Logo from './Logo'
 
@@ -14,6 +14,7 @@ const navItems = [
 const sidebarExtras = [
   { to: '/match', icon: Sparkles, label: 'Co-founder Match' },
   { to: '/startups', icon: Rocket, label: 'Ventures' },
+  { to: '/advisor', icon: Bot, label: 'AI Advisor' },
 ]
 
 export default function AppShell() {

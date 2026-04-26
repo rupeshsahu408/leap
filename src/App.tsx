@@ -17,6 +17,7 @@ import StartupNew from './pages/StartupNew'
 import StartupView from './pages/StartupView'
 import StartupEdit from './pages/StartupEdit'
 import Match from './pages/Match'
+import Advisor from './pages/Advisor'
 import AppShell from './components/AppShell'
 
 function Loading() {
@@ -84,6 +85,7 @@ export default function App() {
             <Route path="startups/:id" element={<StartupView />} />
             <Route path="startups/:id/edit" element={<StartupEdit />} />
             <Route path="match" element={<Match />} />
+            <Route path="advisor" element={<Advisor />} />
             <Route path="profile" element={<Profile />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />

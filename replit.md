@@ -13,10 +13,11 @@ A social network and platform built specifically for entrepreneurs to find co-fo
 - **vite-plugin-pwa** for installable Progressive Web App
 
 ### Backend / Data
+- **Express + Vite middleware** (single Node process serves the SPA on port 5000 and exposes `/api/*` routes — entry: `server/index.ts`)
 - **Firebase Auth** (Google sign-in)
 - **Firebase Firestore** (real-time database, accessed directly from client)
 - **Cloudinary** (image storage — unsigned uploads from the client)
-- **Google Gemini AI** (`@google/generative-ai`) — wired up in a later phase
+- **Google Gemini** via Replit AI Integrations (`@google/genai`, server-side; no API key needed — auth is handled via `AI_INTEGRATIONS_GEMINI_BASE_URL` + `AI_INTEGRATIONS_GEMINI_API_KEY`, billed to Replit credits)
 
 ## Project Structure
 
@@ -33,6 +34,7 @@ src/
 │   ├── messaging.ts     # Conversations + real-time messages
 │   ├── startups.ts      # Startup CRUD + member queries
 │   ├── match.ts         # Co-founder scoring + ranking (client-side)
+│   ├── advisor.ts       # Firestore CRUD for advisor chat history
 │   ├── cloudinary.ts    # Unsigned image upload helper
 │   └── time.ts          # timeAgo() formatter
 ├── components/
@@ -62,7 +64,11 @@ src/
     ├── StartupNew.tsx   # Create venture form
     ├── StartupView.tsx  # Public venture page at /startups/:id
     ├── StartupEdit.tsx  # Owner-only edit + delete
-    └── Match.tsx        # Co-founder match recommendations at /match
+    ├── Match.tsx        # Co-founder match recommendations at /match
+    └── Advisor.tsx      # AI advisor chat at /advisor (streaming)
+server/
+├── index.ts             # Express + Vite SSR-middleware host (port 5000)
+└── ai.ts                # POST /api/advisor/chat — SSE stream from Gemini
 public/
 ├── icons/               # PWA icons (SVG)
 └── favicon.svg
@@ -89,8 +95,8 @@ Stored as Replit secrets (Vite reads them at build/dev via `import.meta.env`):
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID`
 
-Later phases:
-- `GEMINI_API_KEY` — for the AI advisor (Phase 6)
+Auto-managed by Replit (do not set or display):
+- `AI_INTEGRATIONS_GEMINI_BASE_URL`, `AI_INTEGRATIONS_GEMINI_API_KEY` — Gemini access via Replit AI Integrations
 
 ## Run
 - `npm run dev` (port 5000) — handled by the "Start application" workflow
@@ -102,7 +108,7 @@ Later phases:
 3. **Network & DMs** — people directory, follow, public profiles, real-time DMs ✅
 4. **Startup Pages** — public startup profiles, directory, ownership/edit ✅
 5. **Co-founder Match** — smart ranking by complementary skills, stage, intent ✅
-6. **AI Advisor** — Gemini chat + idea analysis
+6. **AI Advisor** — Gemini chat tailored to founder profile, streaming, history in Firestore ✅
 7. **Investors & Funding** — pitch + warm intros
 8. **Communities & Events** — groups, meetups, AMAs
 9. **Mentorship & Learning** — mentor booking, resources
