@@ -13,11 +13,12 @@ A social network and platform built specifically for entrepreneurs to find co-fo
 - **vite-plugin-pwa** for installable Progressive Web App
 
 ### Backend / Data
-- **Express + Vite middleware** (single Node process serves the SPA on port 5000 and exposes `/api/*` routes — entry: `server/index.ts`)
+- **Local dev:** Express + Vite middleware (`server/index.ts`) on port 5000 — handles `/api/*` routes for streaming AI.
+- **Production (Vercel):** static Vite build (`dist/`) served from Vercel + serverless **Edge Functions** in `api/` (e.g. `api/advisor/chat.ts`). `vercel.json` rewrites all non-`/api/*` paths to `index.html` so client routing works.
 - **Firebase Auth** (Google sign-in)
 - **Firebase Firestore** (real-time database, accessed directly from client)
 - **Cloudinary** (image storage — unsigned uploads from the client)
-- **Google Gemini** via Replit AI Integrations (`@google/genai`, server-side; no API key needed — auth is handled via `AI_INTEGRATIONS_GEMINI_BASE_URL` + `AI_INTEGRATIONS_GEMINI_API_KEY`, billed to Replit credits)
+- **Google Gemini** (`@google/genai`) — uses `GEMINI_API_KEY` from env. In Replit dev only, falls back to the managed Replit AI Integrations vars (`AI_INTEGRATIONS_GEMINI_BASE_URL` + `AI_INTEGRATIONS_GEMINI_API_KEY`) so no key is needed locally.
 
 ## Project Structure
 
@@ -66,9 +67,12 @@ src/
     ├── StartupEdit.tsx  # Owner-only edit + delete
     ├── Match.tsx        # Co-founder match recommendations at /match
     └── Advisor.tsx      # AI advisor chat at /advisor (streaming)
-server/
+server/                  # Local dev only (not deployed to Vercel)
 ├── index.ts             # Express + Vite SSR-middleware host (port 5000)
 └── ai.ts                # POST /api/advisor/chat — SSE stream from Gemini
+api/                     # Vercel serverless Edge Functions (production)
+└── advisor/
+    └── chat.ts          # POST /api/advisor/chat — Edge runtime, streams Gemini
 public/
 ├── icons/               # PWA icons (SVG)
 └── favicon.svg
@@ -95,11 +99,24 @@ Stored as Replit secrets (Vite reads them at build/dev via `import.meta.env`):
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID`
 
-Auto-managed by Replit (do not set or display):
-- `AI_INTEGRATIONS_GEMINI_BASE_URL`, `AI_INTEGRATIONS_GEMINI_API_KEY` — Gemini access via Replit AI Integrations
+Server-side only (do **not** prefix with VITE_, never expose to the browser):
+- `GEMINI_API_KEY` — Google Gemini API key from https://aistudio.google.com (required in production on Vercel)
+
+Auto-managed by Replit during local dev (used as a fallback when `GEMINI_API_KEY` is unset):
+- `AI_INTEGRATIONS_GEMINI_BASE_URL`, `AI_INTEGRATIONS_GEMINI_API_KEY`
+
+A full template lives in `.env.example`.
 
 ## Run
-- `npm run dev` (port 5000) — handled by the "Start application" workflow
+- `npm run dev` (port 5000) — handled by the "Start application" workflow.
+- `npm run build` — produces the static SPA in `dist/` for Vercel.
+
+## Deploy (Vercel)
+1. Push to GitHub, then import the repo on Vercel.
+2. Framework auto-detects as Vite. No build settings needed (`vercel.json` covers it).
+3. In **Project → Settings → Environment Variables**, add every var listed in `.env.example` (Firebase, Cloudinary, and `GEMINI_API_KEY`).
+4. In Firebase Console → Authentication → Settings → **Authorized domains**, add the Vercel domain (e.g. `foundry.vercel.app`) and any custom domain.
+5. Deploy.
 
 ## Roadmap (phased build)
 0. **Foundation** — Firebase + PWA + clean app shell ✅

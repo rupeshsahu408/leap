@@ -1,13 +1,20 @@
 import type { Express, Request, Response } from 'express'
 import { GoogleGenAI } from '@google/genai'
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
-  httpOptions: {
-    apiVersion: '',
-    baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
-  },
-})
+// Prefer a real GEMINI_API_KEY (works anywhere — Vercel, local, Replit prod).
+// Fall back to Replit's managed AI Integrations vars when running inside Replit
+// for free, key-less local development.
+const useReplitProxy = !process.env.GEMINI_API_KEY && !!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL
+
+const ai = useReplitProxy
+  ? new GoogleGenAI({
+      apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+      httpOptions: {
+        apiVersion: '',
+        baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+      },
+    })
+  : new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
 
 const SYSTEM_PROMPT = `You are Foundry's AI Co-founder Advisor — a senior operator who has founded, scaled, and exited multiple startups, advised early-stage founders, and led product at companies like Stripe and Notion.
 
@@ -67,8 +74,10 @@ export function registerAdvisorRoutes(app: Express): void {
       return res.status(400).json({ error: 'messages array required' })
     }
 
-    if (!process.env.AI_INTEGRATIONS_GEMINI_BASE_URL) {
-      return res.status(500).json({ error: 'AI is not configured on this server' })
+    if (!process.env.GEMINI_API_KEY && !process.env.AI_INTEGRATIONS_GEMINI_BASE_URL) {
+      return res
+        .status(500)
+        .json({ error: 'AI is not configured (missing GEMINI_API_KEY)' })
     }
 
     const trimmed = messages.slice(-30).map((m) => ({
