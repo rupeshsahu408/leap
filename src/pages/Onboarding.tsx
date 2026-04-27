@@ -23,7 +23,7 @@ const LOOKING_FOR = [
 ]
 
 export default function Onboarding() {
-  const { profile, saveProfile } = useAuth()
+  const { user, profile, saveProfile } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [headline, setHeadline] = useState(profile?.headline ?? '')
@@ -33,24 +33,58 @@ export default function Onboarding() {
   const [skills, setSkills] = useState<string[]>(profile?.skills ?? [])
   const [lookingFor, setLookingFor] = useState<string[]>(profile?.lookingFor ?? [])
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   function toggle(arr: string[], v: string, set: (a: string[]) => void) {
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v])
   }
 
   async function finish() {
+    setError(null)
+
+    if (!user) {
+      setError("You're not signed in. Please refresh and sign in again.")
+      return
+    }
+
     setBusy(true)
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(
+        () =>
+          reject(
+            new Error(
+              "Save timed out after 15s. Likely causes: (1) Firestore Database hasn't been created in Firebase Console, (2) Security Rules block writes, or (3) no internet. Open DevTools → Console for the underlying error.",
+            ),
+          ),
+        15000,
+      ),
+    )
+
     try {
-      await saveProfile({
-        headline,
-        bio,
-        location,
-        stage,
-        skills,
-        lookingFor,
-        onboarded: true,
-      })
+      await Promise.race([
+        saveProfile({
+          headline,
+          bio,
+          location,
+          stage,
+          skills,
+          lookingFor,
+          onboarded: true,
+        }),
+        timeout,
+      ])
       navigate('/', { replace: true })
+    } catch (e) {
+      console.error('[onboarding] saveProfile failed:', e)
+      const msg = e instanceof Error ? e.message : 'Could not save profile.'
+      // Map Firebase permission errors to a clearer message
+      if (/permission|insufficient/i.test(msg)) {
+        setError(
+          "Firestore rejected the write (Security Rules). In Firebase Console → Firestore Database → Rules, make sure authenticated users can write to /users/{uid}.",
+        )
+      } else {
+        setError(msg)
+      }
     } finally {
       setBusy(false)
     }
@@ -171,6 +205,12 @@ export default function Onboarding() {
                 ))}
               </div>
             </div>
+
+            {error && (
+              <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                {error}
+              </div>
+            )}
 
             <div className="flex justify-between">
               <button onClick={() => setStep(2)} className="btn-ghost">Back</button>
