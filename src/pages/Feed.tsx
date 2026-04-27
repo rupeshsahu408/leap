@@ -4,6 +4,7 @@ import { type Post, subscribeFeed } from '../lib/posts'
 import PostComposer from '../components/PostComposer'
 import PostCard from '../components/PostCard'
 import StoryRail from '../components/StoryRail'
+import DailyPrompt from '../components/DailyPrompt'
 
 export default function Feed() {
   const [posts, setPosts] = useState<Post[] | null>(null)
@@ -14,6 +15,8 @@ export default function Feed() {
 
   return (
     <div className="space-y-3 md:space-y-5">
+      <DailyPrompt />
+
       <StoryRail />
 
       <div className="px-4 md:px-0">

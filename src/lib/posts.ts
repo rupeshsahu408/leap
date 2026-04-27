@@ -29,6 +29,8 @@ export type Post = {
   hashtags: string[]
   likeCount: number
   commentCount: number
+  roomId?: string          // optional room slug ('saas', 'ai', …) — undefined = general feed
+  dailyShipDate?: string   // optional 'YYYY-MM-DD' — set when this is a daily ship reply
   createdAt?: Timestamp
 }
 
@@ -58,6 +60,8 @@ type CreatePostInput = {
   authorHeadline?: string
   text: string
   imageUrl?: string
+  roomId?: string
+  dailyShipDate?: string
 }
 
 export async function createPost(input: CreatePostInput): Promise<string> {
@@ -73,9 +77,35 @@ export async function createPost(input: CreatePostInput): Promise<string> {
     hashtags,
     likeCount: 0,
     commentCount: 0,
+    roomId: input.roomId ?? null,
+    dailyShipDate: input.dailyShipDate ?? null,
     createdAt: serverTimestamp(),
   })
   return ref.id
+}
+
+export function subscribeRoomFeed(
+  roomId: string,
+  cb: (posts: Post[]) => void,
+  max = 100,
+): Unsubscribe {
+  if (!db) return () => {}
+  const q = query(
+    collection(db, 'posts'),
+    where('roomId', '==', roomId),
+    fbLimit(max),
+  )
+  return onSnapshot(q, (snap) => {
+    const list = snap.docs.map(
+      (d) => ({ id: d.id, ...(d.data() as Omit<Post, 'id'>) }),
+    )
+    list.sort((a, b) => {
+      const at = a.createdAt?.toMillis?.() ?? 0
+      const bt = b.createdAt?.toMillis?.() ?? 0
+      return bt - at
+    })
+    cb(list)
+  })
 }
 
 export async function deletePost(postId: string): Promise<void> {

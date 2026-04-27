@@ -11,10 +11,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Foundry — A Network for Builders',
+        name: 'Foundry — A Hub for Indie Builders',
         short_name: 'Foundry',
         description:
-          'Where founders meet co-founders, share ideas, and build startups together.',
+          'A small, close hub for solo builders and indie hackers. Share what you ship today, get sharp feedback, and find your people.',
         theme_color: '#f59e0b',
         background_color: '#0a0a0a',
         display: 'standalone',

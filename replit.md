@@ -1,6 +1,14 @@
-# Foundry — A Network for Builders
+# Foundry — A Hub for Indie Builders
 
-A social network and platform built specifically for entrepreneurs to find co-founders, share ideas, get AI-powered guidance, and grow their startups together.
+A small, close hub for solo builders, indie hackers and tiny teams. The app feels like one shared room where everyone's building. MVP pillars:
+
+1. **Builder profiles** with current project, "can help with" + "looking for" tags, and a home room.
+2. **Niche rooms** — small focused feeds (SaaS, AI, Mobile, DTC, Devtools, Creators).
+3. **Daily ship thread** — "What are you shipping today?" pinned at the top of the feed every day.
+4. **Project pages with build logs** — append-only timeline of updates / milestones / learnings / ships.
+5. **Feedback exchange** — structured asks (idea / product / landing) and rated reviews.
+
+Co-founder match and AI advisor remain available as power-tools in the sidebar.
 
 ## Tech Stack
 
@@ -29,11 +37,15 @@ src/
 ├── index.css            # Tailwind v4 + theme
 ├── lib/
 │   ├── firebase.ts      # Firebase init (auth, firestore, providers)
-│   ├── auth.tsx         # AuthProvider + useAuth() hook
-│   ├── posts.ts         # Firestore CRUD: posts, likes, comments, hashtag query
+│   ├── auth.tsx         # AuthProvider + useAuth() hook (UserProfile incl. username, currentProject, niche, canHelpWith)
+│   ├── posts.ts         # Firestore CRUD: posts, likes, comments, hashtag/room queries (Post incl. roomId, dailyShipDate)
 │   ├── social.ts        # Users directory + follow/unfollow + counts
 │   ├── messaging.ts     # Conversations + real-time messages
 │   ├── startups.ts      # Startup CRUD + member queries
+│   ├── buildLog.ts      # NEW — append-only build log entries (subcollection on each startup)
+│   ├── feedback.ts      # NEW — feedback requests + structured reviews (top-level "feedback" collection)
+│   ├── rooms.ts         # NEW — hardcoded niche room metadata (slug, name, emoji, accent)
+│   ├── daily.ts         # NEW — todayKey() / prettyDate() helpers for the daily ship thread
 │   ├── match.ts         # Co-founder scoring + ranking (client-side)
 │   ├── advisor.ts       # Firestore CRUD for advisor chat history
 │   ├── cloudinary.ts    # Unsigned image upload helper
@@ -49,21 +61,29 @@ src/
 │   ├── MatchCard.tsx    # Co-founder match recommendation card
 │   ├── HashtagText.tsx  # Renders #hashtags as Links
 │   ├── PostComposer.tsx # Text + optional image, hashtag-aware
-│   └── PostCard.tsx     # Post + likes + inline comments
+│   ├── PostCard.tsx     # Post + likes + inline comments
+│   ├── DailyPrompt.tsx  # NEW — "What are you shipping today?" card on the feed
+│   ├── BuildLogTimeline.tsx # NEW — vertical timeline + composer for project build logs
+│   └── StoryRail.tsx    # Founder spotlight scroller (kept for visual variety)
 └── pages/
-    ├── SignIn.tsx       # Google sign-in
-    ├── Onboarding.tsx   # 3-step profile setup
-    ├── Feed.tsx         # Home feed — composer + real-time post list
+    ├── SignIn.tsx       # Google sign-in (indie-builder positioning)
+    ├── Onboarding.tsx   # 4-step profile setup (identity → building → skills → looking for)
+    ├── Feed.tsx         # Home feed — daily prompt + spotlight + composer + post list
     ├── Compose.tsx      # Full-page composer (mobile "Post" tab)
     ├── Tag.tsx          # Filtered feed for /tag/:tag
-    ├── Profile.tsx      # Current user profile
+    ├── Profile.tsx      # Current user profile (handle, project, niche, can-help)
     ├── Network.tsx      # Discover + Following tabs, search
     ├── UserProfile.tsx  # Public profile at /u/:uid (follow + message)
     ├── Messages.tsx     # Conversation list at /messages
     ├── Conversation.tsx # 1-on-1 chat at /messages/:id
-    ├── Startups.tsx     # Ventures directory at /startups
-    ├── StartupNew.tsx   # Create venture form
-    ├── StartupView.tsx  # Public venture page at /startups/:id
+    ├── Rooms.tsx        # NEW — list of niche rooms at /rooms
+    ├── Room.tsx         # NEW — single room feed + inline composer at /rooms/:slug
+    ├── Feedback.tsx     # NEW — feedback exchange list with kind tabs at /feedback
+    ├── FeedbackNew.tsx  # NEW — submit a feedback request
+    ├── FeedbackPost.tsx # NEW — single feedback request + reviews at /feedback/:id
+    ├── Startups.tsx     # Projects directory at /startups
+    ├── StartupNew.tsx   # Create project form
+    ├── StartupView.tsx  # Public project page at /startups/:id (now includes build log)
     ├── StartupEdit.tsx  # Owner-only edit + delete
     ├── Match.tsx        # Co-founder match recommendations at /match
     └── Advisor.tsx      # AI advisor chat at /advisor (streaming)
@@ -118,15 +138,30 @@ A full template lives in `.env.example`.
 4. In Firebase Console → Authentication → Settings → **Authorized domains**, add the Vercel domain (e.g. `foundry.vercel.app`) and any custom domain.
 5. Deploy.
 
-## Roadmap (phased build)
-0. **Foundation** — Firebase + PWA + clean app shell ✅
-1. **Identity & Profiles** — onboarding + profile pages ✅
-2. **Social Feed** — posts, likes, comments, hashtags, Cloudinary images ✅
-3. **Network & DMs** — people directory, follow, public profiles, real-time DMs ✅
-4. **Startup Pages** — public startup profiles, directory, ownership/edit ✅
-5. **Co-founder Match** — smart ranking by complementary skills, stage, intent ✅
-6. **AI Advisor** — Gemini chat tailored to founder profile, streaming, history in Firestore ✅
-7. **Investors & Funding** — pitch + warm intros
-8. **Communities & Events** — groups, meetups, AMAs
-9. **Mentorship & Learning** — mentor booking, resources
-10. **Polish & Growth** — notifications, search, recommendations
+## Firestore collections (after the indie-builder pivot)
+
+- `users/{uid}` — profile incl. `username`, `currentProject`, `niche`, `canHelpWith`, `lookingFor`, `skills`, etc.
+- `posts/{postId}` — feed + room posts. Optional `roomId` (room slug) and `dailyShipDate` (`YYYY-MM-DD`).
+- `posts/{postId}/likes/{uid}` and `/comments/{commentId}` (existing).
+- `startups/{startupId}` and `startups/{startupId}/log/{entryId}` — NEW build-log subcollection. Entries have `kind: 'update'|'ship'|'milestone'|'learning'`, `text`, `authorId`, etc.
+- `feedback/{id}` — NEW. `kind: 'idea'|'product'|'landing'`, `title`, `description`, `ask`, `link`, `reviewCount`. Subcollection `feedback/{id}/reviews/{reviewId}` with `text` + `rating` (1-5).
+- `users/{uid}/following/*` and `/followers/*` (existing).
+
+If your Firestore Security Rules previously locked things down, allow authenticated reads/writes for the new `feedback` collection and the `startups/{id}/log` subcollection.
+
+## Roadmap
+
+**Done — indie-hacker MVP**
+- Niche rooms + per-room feeds
+- Daily ship thread on the home feed
+- Project build logs
+- Feedback exchange with structured asks + rated reviews
+- 4-step onboarding capturing handle, current project, home room, skills, can-help-with
+- Indie-builder positioning across SignIn, nav, copy
+
+**Next ideas**
+- Notifications when someone reviews your feedback ask
+- Weekly streak / "shipped 5 days this week" badges on profiles
+- Room-pinned threads + room moderators
+- Public profile at `@username` (in addition to `/u/:uid`)
+- Gemini-powered "feedback drafts" so reviewers never stare at a blank box

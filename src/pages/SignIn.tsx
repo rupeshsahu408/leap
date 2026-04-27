@@ -26,16 +26,23 @@ export default function SignIn() {
         <Logo />
         <div className="space-y-6 max-w-md">
           <h1 className="font-display text-5xl leading-tight">
-            Where founders find <span className="text-brand-400">their people.</span>
+            One small room <br />
+            <span className="text-brand-400">for everyone building.</span>
           </h1>
           <p className="text-zinc-300 text-lg">
-            Foundry is a network for builders. Find co-founders, share what
-            you're working on, get AI-powered guidance, and grow your startup
-            with the right people around you.
+            Foundry is a hub for solo builders, indie hackers and tiny teams.
+            Share what you're shipping today, get sharp feedback, and find the
+            handful of people whose journey looks just like yours.
           </p>
+          <ul className="space-y-2.5 text-sm text-zinc-300">
+            <li className="flex gap-2.5"><span className="text-brand-400">·</span> Daily ship thread — no zero days alone.</li>
+            <li className="flex gap-2.5"><span className="text-brand-400">·</span> Niche rooms — SaaS, AI, Mobile, DTC, Devtools.</li>
+            <li className="flex gap-2.5"><span className="text-brand-400">·</span> Honest feedback exchange — no "looks great!"</li>
+            <li className="flex gap-2.5"><span className="text-brand-400">·</span> Build logs — tell the story behind the launch.</li>
+          </ul>
         </div>
         <p className="text-xs text-zinc-500">
-          © {new Date().getFullYear()} Foundry. Built for entrepreneurs.
+          © {new Date().getFullYear()} Foundry. A home for builders.
         </p>
       </div>
 
@@ -45,9 +52,9 @@ export default function SignIn() {
           <Logo />
         </div>
         <div className="max-w-sm w-full mx-auto md:mx-0">
-          <h2 className="font-display text-3xl mb-2">Welcome to Foundry</h2>
+          <h2 className="font-display text-3xl mb-2">Welcome in.</h2>
           <p className="text-zinc-500 mb-8">
-            Sign in to start building with other founders.
+            Sign in and tell us what you're shipping.
           </p>
 
           {!configured && (

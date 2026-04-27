@@ -26,6 +26,13 @@ export type UserProfile = {
   skills?: string[]
   stage?: string
   lookingFor?: string[]
+  // Indie-builder fields
+  username?: string         // unique handle (lowercased), e.g. "ravi"
+  currentProject?: string   // one-line current focus, e.g. "Building a Notion alternative"
+  niche?: string            // primary room slug they belong to (saas, ai, mobile…)
+  canHelpWith?: string[]    // skills they're happy to help others with
+  twitter?: string          // optional handle (no @)
+  website?: string          // optional URL
   onboarded?: boolean
   createdAt?: unknown
   updatedAt?: unknown

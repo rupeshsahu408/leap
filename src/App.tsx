@@ -18,6 +18,11 @@ import StartupView from './pages/StartupView'
 import StartupEdit from './pages/StartupEdit'
 import Match from './pages/Match'
 import Advisor from './pages/Advisor'
+import Rooms from './pages/Rooms'
+import Room from './pages/Room'
+import Feedback from './pages/Feedback'
+import FeedbackNew from './pages/FeedbackNew'
+import FeedbackPost from './pages/FeedbackPost'
 import AppShell from './components/AppShell'
 
 function Loading() {
@@ -84,6 +89,11 @@ export default function App() {
             <Route path="startups/new" element={<StartupNew />} />
             <Route path="startups/:id" element={<StartupView />} />
             <Route path="startups/:id/edit" element={<StartupEdit />} />
+            <Route path="rooms" element={<Rooms />} />
+            <Route path="rooms/:slug" element={<Room />} />
+            <Route path="feedback" element={<Feedback />} />
+            <Route path="feedback/new" element={<FeedbackNew />} />
+            <Route path="feedback/:id" element={<FeedbackPost />} />
             <Route path="match" element={<Match />} />
             <Route path="advisor" element={<Advisor />} />
             <Route path="profile" element={<Profile />} />

@@ -1,37 +1,60 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { ROOMS } from '../lib/rooms'
 import Logo from '../components/Logo'
 
 const STAGES = [
-  'Just an idea',
-  'Validating',
+  'Just exploring',
+  'Validating an idea',
   'Building MVP',
-  'Launched',
-  'Scaling',
+  'Launched (pre-revenue)',
+  'Revenue & growing',
   'Looking to join one',
 ]
 
 const SKILL_SUGGESTIONS = [
-  'Product', 'Engineering', 'Design', 'Marketing', 'Sales',
-  'Growth', 'Data', 'AI/ML', 'Operations', 'Finance',
+  'Frontend', 'Backend', 'Mobile', 'Design', 'Product',
+  'Marketing', 'SEO', 'Sales', 'Growth', 'Data', 'AI/ML',
+  'Writing', 'Community', 'Fundraising', 'Ops',
 ]
 
 const LOOKING_FOR = [
-  'Co-founder', 'Engineer', 'Designer', 'Marketer',
-  'Mentor', 'Investor', 'Customers', 'Just networking',
+  'Honest feedback',
+  'First users',
+  'A co-founder',
+  'Accountability',
+  'Marketing help',
+  'Tech help',
+  'Design help',
+  'Just to lurk',
 ]
+
+const TOTAL_STEPS = 4
 
 export default function Onboarding() {
   const { user, profile, saveProfile } = useAuth()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
+
+  // Step 1 — Identity
+  const [username, setUsername] = useState(profile?.username ?? '')
   const [headline, setHeadline] = useState(profile?.headline ?? '')
-  const [bio, setBio] = useState(profile?.bio ?? '')
   const [location, setLocation] = useState(profile?.location ?? '')
+
+  // Step 2 — What are you building?
+  const [currentProject, setCurrentProject] = useState(profile?.currentProject ?? '')
   const [stage, setStage] = useState(profile?.stage ?? '')
+  const [niche, setNiche] = useState(profile?.niche ?? '')
+  const [bio, setBio] = useState(profile?.bio ?? '')
+
+  // Step 3 — Skills
   const [skills, setSkills] = useState<string[]>(profile?.skills ?? [])
+  const [canHelpWith, setCanHelpWith] = useState<string[]>(profile?.canHelpWith ?? [])
+
+  // Step 4 — Looking for
   const [lookingFor, setLookingFor] = useState<string[]>(profile?.lookingFor ?? [])
+
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,35 +62,40 @@ export default function Onboarding() {
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v])
   }
 
+  function normalisedHandle(): string {
+    return username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '').slice(0, 24)
+  }
+
   async function finish() {
     setError(null)
-
     if (!user) {
       setError("You're not signed in. Please refresh and sign in again.")
       return
     }
-
     setBusy(true)
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(
         () =>
           reject(
             new Error(
-              "Save timed out after 15s. Likely causes: (1) Firestore Database hasn't been created in Firebase Console, (2) Security Rules block writes, or (3) no internet. Open DevTools → Console for the underlying error.",
+              "Save timed out after 15s. Likely causes: (1) Firestore Database hasn't been created in Firebase Console, (2) Security Rules block writes, or (3) no internet.",
             ),
           ),
         15000,
       ),
     )
-
     try {
       await Promise.race([
         saveProfile({
+          username: normalisedHandle() || undefined,
           headline,
           bio,
           location,
+          currentProject,
+          niche,
           stage,
           skills,
+          canHelpWith,
           lookingFor,
           onboarded: true,
         }),
@@ -77,7 +105,6 @@ export default function Onboarding() {
     } catch (e) {
       console.error('[onboarding] saveProfile failed:', e)
       const msg = e instanceof Error ? e.message : 'Could not save profile.'
-      // Map Firebase permission errors to a clearer message
       if (/permission|insufficient/i.test(msg)) {
         setError(
           "Firestore rejected the write (Security Rules). In Firebase Console → Firestore Database → Rules, make sure authenticated users can write to /users/{uid}.",
@@ -95,7 +122,19 @@ export default function Onboarding() {
       <header className="border-b border-[var(--color-line)] bg-white">
         <div className="max-w-2xl mx-auto px-6 py-5 flex items-center justify-between">
           <Logo />
-          <div className="text-sm text-zinc-500">Step {step} of 3</div>
+          <div className="flex items-center gap-2">
+            {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+              <span
+                key={i}
+                className={`h-1.5 w-6 rounded-full transition ${
+                  i < step ? 'bg-foundry' : 'bg-zinc-200'
+                }`}
+              />
+            ))}
+            <div className="text-xs text-zinc-500 ml-2 hidden sm:block">
+              Step {step} of {TOTAL_STEPS}
+            </div>
+          </div>
         </div>
       </header>
 
@@ -103,32 +142,34 @@ export default function Onboarding() {
         {step === 1 && (
           <section className="animate-fade-in-up space-y-6">
             <div>
-              <h1 className="font-display text-3xl mb-1">Tell us about you</h1>
-              <p className="text-zinc-500">A short headline + bio so other founders know who you are.</p>
+              <h1 className="font-display text-3xl mb-1">Who are you, builder?</h1>
+              <p className="text-zinc-500">A short intro so others can find you.</p>
             </div>
 
-            <Field label="Headline">
+            <Field label="Pick a handle" hint="Lowercase letters, numbers, underscores. Max 24 chars.">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">@</span>
+                <input
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="ravi"
+                  className="input pl-7"
+                  maxLength={24}
+                />
+              </div>
+            </Field>
+
+            <Field label="One-line headline">
               <input
                 value={headline}
                 onChange={(e) => setHeadline(e.target.value)}
-                placeholder="e.g. Building an AI tutor for kids"
+                placeholder="e.g. Solo dev shipping a Notion alternative"
                 className="input"
                 maxLength={120}
               />
             </Field>
 
-            <Field label="Bio">
-              <textarea
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="What are you working on? What do you care about?"
-                rows={4}
-                className="input resize-none"
-                maxLength={500}
-              />
-            </Field>
-
-            <Field label="Location">
+            <Field label="Where are you from?">
               <input
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
@@ -152,27 +193,79 @@ export default function Onboarding() {
         {step === 2 && (
           <section className="animate-fade-in-up space-y-6">
             <div>
-              <h1 className="font-display text-3xl mb-1">Where are you in the journey?</h1>
-              <p className="text-zinc-500">Pick the stage that fits best.</p>
+              <h1 className="font-display text-3xl mb-1">What are you building?</h1>
+              <p className="text-zinc-500">Even if it's "just an idea" — that counts.</p>
             </div>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {STAGES.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setStage(s)}
-                  className={`px-4 py-3 rounded-xl border text-left transition ${
-                    stage === s
-                      ? 'border-brand-500 bg-brand-50 text-brand-800'
-                      : 'border-zinc-200 hover:border-zinc-300 bg-white'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
+
+            <Field label="What you're building right now">
+              <input
+                value={currentProject}
+                onChange={(e) => setCurrentProject(e.target.value)}
+                placeholder="e.g. An AI tool for solo accountants"
+                className="input"
+                maxLength={140}
+              />
+            </Field>
+
+            <Field label="Stage">
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                {STAGES.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setStage(s)}
+                    className={`px-4 py-3 rounded-xl border text-left text-sm transition ${
+                      stage === s
+                        ? 'border-amber-400 bg-amber-50 text-amber-900'
+                        : 'border-zinc-200 hover:border-zinc-300 bg-white text-zinc-700'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="Pick a home room" hint="The niche you'll mostly hang out in. You can join others later.">
+              <div className="grid sm:grid-cols-2 gap-2.5">
+                {ROOMS.map((r) => (
+                  <button
+                    key={r.slug}
+                    onClick={() => setNiche(r.slug)}
+                    className={`px-4 py-3 rounded-xl border text-left transition ${
+                      niche === r.slug
+                        ? 'border-amber-400 bg-amber-50'
+                        : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                    }`}
+                  >
+                    <div className="font-semibold text-sm">
+                      <span className="mr-1.5">{r.emoji}</span>{r.name}
+                    </div>
+                    <div className="text-[12px] text-zinc-500 mt-0.5">{r.tagline}</div>
+                  </button>
+                ))}
+              </div>
+            </Field>
+
+            <Field label="A short bio (optional)">
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="Backstory, side projects, what you care about."
+                rows={3}
+                className="input resize-none"
+                maxLength={500}
+              />
+            </Field>
+
             <div className="flex justify-between">
               <button onClick={() => setStep(1)} className="btn-ghost">Back</button>
-              <button disabled={!stage} onClick={() => setStep(3)} className="btn-primary">Continue</button>
+              <button
+                disabled={!stage || !niche}
+                onClick={() => setStep(3)}
+                className="btn-primary"
+              >
+                Continue
+              </button>
             </div>
           </section>
         )}
@@ -180,12 +273,12 @@ export default function Onboarding() {
         {step === 3 && (
           <section className="animate-fade-in-up space-y-8">
             <div>
-              <h1 className="font-display text-3xl mb-1">Your skills & what you need</h1>
-              <p className="text-zinc-500">This helps us match you with the right people.</p>
+              <h1 className="font-display text-3xl mb-1">Your skills</h1>
+              <p className="text-zinc-500">What are you good at? What are you happy to help others with?</p>
             </div>
 
             <div>
-              <div className="text-sm font-medium mb-3">Your strengths</div>
+              <div className="text-sm font-medium mb-3">My strengths</div>
               <div className="flex flex-wrap gap-2">
                 {SKILL_SUGGESTIONS.map((s) => (
                   <Chip key={s} active={skills.includes(s)} onClick={() => toggle(skills, s, setSkills)}>
@@ -196,14 +289,45 @@ export default function Onboarding() {
             </div>
 
             <div>
-              <div className="text-sm font-medium mb-3">Looking for</div>
+              <div className="text-sm font-medium mb-1">I'd happily help others with</div>
+              <p className="text-xs text-zinc-500 mb-3">
+                Tap any skill you're up for sharing — others can ping you for advice.
+              </p>
               <div className="flex flex-wrap gap-2">
-                {LOOKING_FOR.map((s) => (
-                  <Chip key={s} active={lookingFor.includes(s)} onClick={() => toggle(lookingFor, s, setLookingFor)}>
+                {SKILL_SUGGESTIONS.map((s) => (
+                  <Chip key={s} active={canHelpWith.includes(s)} onClick={() => toggle(canHelpWith, s, setCanHelpWith)}>
                     {s}
                   </Chip>
                 ))}
               </div>
+            </div>
+
+            <div className="flex justify-between">
+              <button onClick={() => setStep(2)} className="btn-ghost">Back</button>
+              <button
+                disabled={skills.length === 0}
+                onClick={() => setStep(4)}
+                className="btn-primary"
+              >
+                Continue
+              </button>
+            </div>
+          </section>
+        )}
+
+        {step === 4 && (
+          <section className="animate-fade-in-up space-y-6">
+            <div>
+              <h1 className="font-display text-3xl mb-1">What are you here for?</h1>
+              <p className="text-zinc-500">Pick anything that fits. No wrong answers — even "just to lurk".</p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {LOOKING_FOR.map((s) => (
+                <Chip key={s} active={lookingFor.includes(s)} onClick={() => toggle(lookingFor, s, setLookingFor)}>
+                  {s}
+                </Chip>
+              ))}
             </div>
 
             {error && (
@@ -213,8 +337,8 @@ export default function Onboarding() {
             )}
 
             <div className="flex justify-between">
-              <button onClick={() => setStep(2)} className="btn-ghost">Back</button>
-              <button disabled={busy || skills.length === 0} onClick={finish} className="btn-primary">
+              <button onClick={() => setStep(3)} className="btn-ghost">Back</button>
+              <button disabled={busy || lookingFor.length === 0} onClick={finish} className="btn-primary">
                 {busy ? 'Saving…' : 'Enter Foundry'}
               </button>
             </div>
@@ -235,10 +359,19 @@ export default function Onboarding() {
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string
+  hint?: string
+  children: React.ReactNode
+}) {
   return (
     <label className="block">
-      <span className="block text-sm font-medium mb-2">{label}</span>
+      <span className="block text-sm font-medium mb-1">{label}</span>
+      {hint && <span className="block text-xs text-zinc-500 mb-2">{hint}</span>}
       {children}
     </label>
   )
@@ -258,7 +391,7 @@ function Chip({
       onClick={onClick}
       className={`px-3.5 py-1.5 rounded-full text-sm border transition ${
         active
-          ? 'bg-brand-500 border-brand-500 text-white'
+          ? 'bg-amber-500 border-amber-500 text-white'
           : 'bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300'
       }`}
     >

@@ -6,6 +6,7 @@ import { subscribeStartup, type Startup } from '../lib/startups'
 import { fetchUser, type PublicUser } from '../lib/social'
 import { ventureFeedbackPrompt } from '../lib/advisor'
 import Avatar from '../components/Avatar'
+import BuildLogTimeline from '../components/BuildLogTimeline'
 
 export default function StartupView() {
   const { id = '' } = useParams()
@@ -136,6 +137,8 @@ export default function StartupView() {
           </div>
         </Section>
       )}
+
+      <BuildLogTimeline startupId={id} canPost={data.teamIds.includes(user?.uid ?? '')} />
 
       <Section
         title="Team"

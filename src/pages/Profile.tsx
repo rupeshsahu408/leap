@@ -46,7 +46,7 @@ export default function Profile() {
 
             {/* Stats row */}
             <div className="hidden md:flex items-center gap-7 mt-3 text-sm">
-              <Stat label="ventures" value={ventures?.length ?? 0} />
+              <Stat label="projects" value={ventures?.length ?? 0} />
               <Stat label="followers" value={followers} />
               <Stat label="following" value={following} />
             </div>
@@ -55,14 +55,22 @@ export default function Profile() {
 
         {/* Mobile stats row */}
         <div className="md:hidden flex justify-around mt-5 pt-4 border-t border-[var(--color-line)] text-center">
-          <Stat label="ventures" value={ventures?.length ?? 0} />
+          <Stat label="projects" value={ventures?.length ?? 0} />
           <Stat label="followers" value={followers} />
           <Stat label="following" value={following} />
         </div>
 
-        {/* Headline + bio + meta */}
+        {/* Handle + headline + project + bio + meta */}
         <div className="mt-5 space-y-2 text-[14px]">
+          {profile.username && (
+            <div className="text-[13px] text-zinc-500">@{profile.username}</div>
+          )}
           {profile.headline && <div className="font-semibold">{profile.headline}</div>}
+          {profile.currentProject && (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[12px] font-medium">
+              <Rocket className="size-3.5" /> Building: {profile.currentProject}
+            </div>
+          )}
           {profile.bio && <p className="text-zinc-700 leading-relaxed whitespace-pre-line">{profile.bio}</p>}
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-zinc-500 pt-1">
             {profile.location && (
@@ -78,14 +86,23 @@ export default function Profile() {
           </div>
         </div>
 
-        {/* Skills + looking-for chips */}
-        {(!!profile.skills?.length || !!profile.lookingFor?.length) && (
+        {/* Skills, can help, looking-for chips */}
+        {(!!profile.skills?.length || !!profile.canHelpWith?.length || !!profile.lookingFor?.length) && (
           <div className="mt-4 space-y-3">
             {!!profile.skills?.length && (
               <div className="flex flex-wrap gap-1.5">
                 {profile.skills.map((s) => (
                   <span key={s} className="px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs">
                     {s}
+                  </span>
+                ))}
+              </div>
+            )}
+            {!!profile.canHelpWith?.length && (
+              <div className="flex flex-wrap gap-1.5">
+                {profile.canHelpWith.map((s) => (
+                  <span key={s} className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-medium">
+                    Can help · {s}
                   </span>
                 ))}
               </div>
@@ -106,7 +123,7 @@ export default function Profile() {
       {/* ===== Tabs ===== */}
       <div className="mt-6 border-t border-[var(--color-line)]">
         <div className="flex justify-around md:justify-start md:gap-12 md:px-2 text-xs uppercase tracking-wider font-semibold">
-          <TabButton active={tab === 'ventures'} onClick={() => setTab('ventures')} icon={Grid3x3} label="Ventures" />
+          <TabButton active={tab === 'ventures'} onClick={() => setTab('ventures')} icon={Grid3x3} label="Projects" />
           <TabButton active={tab === 'about'} onClick={() => setTab('about')} icon={BookmarkPlus} label="About" />
         </div>
       </div>
@@ -116,7 +133,7 @@ export default function Profile() {
         {tab === 'ventures' && (
           <>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold">My ventures</h2>
+              <h2 className="text-sm font-semibold">My projects</h2>
               <Link
                 to="/startups/new"
                 className="inline-flex items-center gap-1 text-sm font-semibold text-foundry"
@@ -140,10 +157,10 @@ export default function Profile() {
                   <Rocket className="size-5" />
                 </div>
                 <p className="text-sm text-zinc-500 mt-3">
-                  You haven't listed a venture yet.
+                  You haven't listed a project yet.
                 </p>
                 <Link to="/startups/new" className="btn btn-foundry mt-4 inline-flex">
-                  <Plus className="size-4" /> Create your first venture
+                  <Plus className="size-4" /> Create your first project
                 </Link>
               </div>
             ) : (
@@ -158,21 +175,15 @@ export default function Profile() {
 
         {tab === 'about' && (
           <div className="card p-5 space-y-3 text-sm">
-            {profile.email && (
-              <Row label="Email" value={profile.email} />
-            )}
-            {profile.location && (
-              <Row label="Location" value={profile.location} />
-            )}
-            {profile.stage && (
-              <Row label="Stage" value={profile.stage} />
-            )}
-            {!!profile.skills?.length && (
-              <Row label="Skills" value={profile.skills.join(', ')} />
-            )}
-            {!!profile.lookingFor?.length && (
-              <Row label="Looking for" value={profile.lookingFor.join(', ')} />
-            )}
+            {profile.username && <Row label="Handle" value={`@${profile.username}`} />}
+            {profile.email && <Row label="Email" value={profile.email} />}
+            {profile.currentProject && <Row label="Building" value={profile.currentProject} />}
+            {profile.niche && <Row label="Home room" value={profile.niche} />}
+            {profile.location && <Row label="Location" value={profile.location} />}
+            {profile.stage && <Row label="Stage" value={profile.stage} />}
+            {!!profile.skills?.length && <Row label="Skills" value={profile.skills.join(', ')} />}
+            {!!profile.canHelpWith?.length && <Row label="Can help with" value={profile.canHelpWith.join(', ')} />}
+            {!!profile.lookingFor?.length && <Row label="Looking for" value={profile.lookingFor.join(', ')} />}
           </div>
         )}
       </div>

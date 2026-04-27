@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom'
 import {
-  Home, Search, PlusSquare, Send, User as UserIcon,
-  Sparkles, Rocket, Bot, LogOut, Heart,
+  Home, Hash, PlusSquare, MessageSquareHeart, User as UserIcon,
+  Sparkles, Rocket, Bot, LogOut, Send, Search,
 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import Logo from './Logo'
@@ -16,17 +16,19 @@ type NavItem = {
 
 // Bottom-tab order on mobile (Create is centered/elevated)
 const primaryNav: NavItem[] = [
-  { to: '/',         icon: Home,       label: 'Feed', end: true },
-  { to: '/network',  icon: Search,     label: 'Discover' },
-  { to: '/post',     icon: PlusSquare, label: 'Create' },
-  { to: '/messages', icon: Send,       label: 'Chats' },
-  { to: '/profile',  icon: UserIcon,   label: 'Me' },
+  { to: '/',          icon: Home,              label: 'Feed', end: true },
+  { to: '/rooms',     icon: Hash,              label: 'Rooms' },
+  { to: '/post',      icon: PlusSquare,        label: 'Create' },
+  { to: '/feedback',  icon: MessageSquareHeart, label: 'Feedback' },
+  { to: '/profile',   icon: UserIcon,          label: 'Me' },
 ]
 
 const sidebarExtras: NavItem[] = [
-  { to: '/match',    icon: Sparkles,   label: 'Co-founder Match' },
-  { to: '/startups', icon: Rocket,     label: 'Ventures' },
-  { to: '/advisor',  icon: Bot,        label: 'AI Advisor' },
+  { to: '/network',  icon: Search,     label: 'Discover builders' },
+  { to: '/messages', icon: Send,       label: 'Chats' },
+  { to: '/match',    icon: Sparkles,   label: 'Co-founder match' },
+  { to: '/startups', icon: Rocket,     label: 'Projects' },
+  { to: '/advisor',  icon: Bot,        label: 'AI advisor' },
 ]
 
 export default function AppShell() {
@@ -78,11 +80,11 @@ export default function AppShell() {
           <Logo small />
           <div className="flex items-center gap-1">
             <button
-              onClick={() => navigate('/match')}
+              onClick={() => navigate('/network')}
               className="size-10 grid place-items-center rounded-full text-zinc-700 hover:bg-zinc-100"
-              title="Co-founder Match"
+              title="Discover builders"
             >
-              <Heart className="size-5" />
+              <Search className="size-5" />
             </button>
             <button
               onClick={() => navigate('/messages')}
