@@ -12,6 +12,8 @@ import {
   subscribeComments,
   addComment,
   deletePost,
+  toggleSave,
+  subscribeUserSaved,
 } from '../lib/posts'
 import { postFeedbackPrompt } from '../lib/advisor'
 import { timeAgo } from '../lib/time'
@@ -22,6 +24,7 @@ export default function PostCard({ post }: { post: Post }) {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
   const [liked, setLiked] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [showComments, setShowComments] = useState(false)
   const [comments, setComments] = useState<Comment[]>([])
   const [commentText, setCommentText] = useState('')
@@ -37,6 +40,21 @@ export default function PostCard({ post }: { post: Post }) {
     if (!user) return
     return subscribeUserLike(post.id, user.uid, setLiked)
   }, [post.id, user])
+
+  useEffect(() => {
+    if (!user) return
+    return subscribeUserSaved(post.id, user.uid, setSaved)
+  }, [post.id, user])
+
+  async function performSave() {
+    if (!user) return
+    setSaved((v) => !v)
+    try {
+      await toggleSave(post.id, user.uid)
+    } catch {
+      setSaved((v) => !v)
+    }
+  }
 
   useEffect(() => {
     if (!showComments) return
@@ -229,12 +247,16 @@ export default function PostCard({ post }: { post: Post }) {
             <Send className="size-6 text-zinc-800" strokeWidth={2} />
           </button>
           <button
+            onClick={performSave}
             className="ml-auto size-10 grid place-items-center rounded-full hover:bg-zinc-100 tap"
-            aria-label="Save"
-            title="Save (coming soon)"
-            disabled
+            aria-label={saved ? 'Unsave' : 'Save'}
+            title={saved ? 'Unsave' : 'Save'}
           >
-            <Bookmark className="size-6 text-zinc-300" strokeWidth={2} />
+            <Bookmark
+              className="size-6 text-zinc-800"
+              strokeWidth={2}
+              fill={saved ? 'currentColor' : 'none'}
+            />
           </button>
         </div>
 

@@ -257,3 +257,47 @@ export async function ensureUserDoc(uid: string, data: Record<string, unknown>) 
   if (!db) return
   await setDoc(doc(db, 'users', uid), data, { merge: true })
 }
+
+/* ============================ Saved / Bookmarks ============================ */
+
+export function subscribeUserSaved(
+  postId: string,
+  uid: string,
+  cb: (saved: boolean) => void,
+): Unsubscribe {
+  if (!db) return () => {}
+  const ref = doc(db, 'users', uid, 'savedPosts', postId)
+  return onSnapshot(ref, (snap) => cb(snap.exists()))
+}
+
+export async function toggleSave(postId: string, uid: string): Promise<void> {
+  if (!db) throw new Error('Firestore not configured')
+  const ref = doc(db, 'users', uid, 'savedPosts', postId)
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref)
+    if (snap.exists()) tx.delete(ref)
+    else tx.set(ref, { createdAt: serverTimestamp() })
+  })
+}
+
+/** Stream the user's saved post IDs (newest first), then resolve to full posts. */
+export function subscribeSavedPosts(
+  uid: string,
+  cb: (posts: Post[]) => void,
+  max = 60,
+): Unsubscribe {
+  if (!db) return () => {}
+  const q = query(collection(db, 'users', uid, 'savedPosts'), fbLimit(max))
+  return onSnapshot(q, async (snap) => {
+    const ids = snap.docs.map((d) => d.id)
+    if (ids.length === 0) { cb([]); return }
+    const results = await Promise.all(ids.map((id) => getPost(id)))
+    const list = results.filter((p): p is Post => !!p)
+    list.sort((a, b) => {
+      const at = a.createdAt?.toMillis?.() ?? 0
+      const bt = b.createdAt?.toMillis?.() ?? 0
+      return bt - at
+    })
+    cb(list)
+  })
+}

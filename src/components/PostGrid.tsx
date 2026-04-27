@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Heart, ImageIcon, MessageCircle } from 'lucide-react'
-import { type Post, subscribeUserPosts } from '../lib/posts'
+import { type Post, subscribeUserPosts, subscribeSavedPosts } from '../lib/posts'
 import HashtagText from './HashtagText'
 
 type Props = {
   uid: string
+  source?: 'authored' | 'saved'
   emptyTitle?: string
   emptyHint?: string
 }
@@ -15,6 +16,7 @@ type Props = {
  */
 export default function PostGrid({
   uid,
+  source = 'authored',
   emptyTitle = 'No posts yet',
   emptyHint = 'When this builder shares something, it shows up here.',
 }: Props) {
@@ -23,8 +25,10 @@ export default function PostGrid({
   useEffect(() => {
     if (!uid) return
     setPosts(null)
-    return subscribeUserPosts(uid, setPosts)
-  }, [uid])
+    return source === 'saved'
+      ? subscribeSavedPosts(uid, setPosts)
+      : subscribeUserPosts(uid, setPosts)
+  }, [uid, source])
 
   if (posts === null) {
     return (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  MapPin, Briefcase, Plus, Rocket, Settings, Grid3x3, Heart, BookmarkPlus, LogOut, Share2,
+  MapPin, Briefcase, Plus, Rocket, Settings, Grid3x3, Heart, Bookmark, Info, LogOut, Share2,
 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { fetchStartupsByMember, type Startup } from '../lib/startups'
@@ -9,7 +9,7 @@ import StartupCard from '../components/StartupCard'
 import Avatar from '../components/Avatar'
 import PostGrid from '../components/PostGrid'
 
-type Tab = 'posts' | 'projects' | 'about'
+type Tab = 'posts' | 'saved' | 'projects' | 'about'
 
 export default function Profile() {
   const { profile, user, signOut } = useAuth()
@@ -104,9 +104,10 @@ export default function Profile() {
       {/* ===== Tabs ===== */}
       <div className="mt-6 border-t border-[var(--color-line)]">
         <div className="flex justify-around md:justify-center md:gap-12 text-[11px] uppercase tracking-[0.12em] font-semibold">
-          <TabButton active={tab === 'posts'}    onClick={() => setTab('posts')}    icon={Grid3x3}      label="Posts" />
-          <TabButton active={tab === 'projects'} onClick={() => setTab('projects')} icon={Rocket}       label={`Projects ${projectCount ? `· ${projectCount}` : ''}`.trim()} />
-          <TabButton active={tab === 'about'}    onClick={() => setTab('about')}    icon={BookmarkPlus} label="About" />
+          <TabButton active={tab === 'posts'}    onClick={() => setTab('posts')}    icon={Grid3x3} label="Posts" />
+          <TabButton active={tab === 'saved'}    onClick={() => setTab('saved')}    icon={Bookmark} label="Saved" />
+          <TabButton active={tab === 'projects'} onClick={() => setTab('projects')} icon={Rocket}  label={`Projects ${projectCount ? `· ${projectCount}` : ''}`.trim()} />
+          <TabButton active={tab === 'about'}    onClick={() => setTab('about')}    icon={Info}    label="About" />
         </div>
       </div>
 
@@ -117,6 +118,15 @@ export default function Profile() {
             uid={user.uid}
             emptyTitle="Your grid is waiting"
             emptyHint="Share your first ship and it'll live here forever — start with one tiny win."
+          />
+        )}
+
+        {tab === 'saved' && (
+          <PostGrid
+            uid={user.uid}
+            source="saved"
+            emptyTitle="Nothing saved yet"
+            emptyHint="Tap the bookmark on any post to keep it here for later — only you can see this."
           />
         )}
 

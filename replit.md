@@ -44,6 +44,7 @@ src/
 │   ├── startups.ts      # Startup CRUD + member queries
 │   ├── buildLog.ts      # NEW — append-only build log entries (subcollection on each startup)
 │   ├── feedback.ts      # NEW — feedback requests + structured reviews (top-level "feedback" collection)
+│   ├── stories.ts       # NEW — Instagram-style 24-hour stories (top-level "stories" collection, client-side TTL filter + seen-set in localStorage)
 │   ├── rooms.ts         # NEW — hardcoded niche room metadata (slug, name, emoji, accent)
 │   ├── daily.ts         # NEW — todayKey() / prettyDate() helpers for the daily ship thread
 │   ├── match.ts         # Co-founder scoring + ranking (client-side)

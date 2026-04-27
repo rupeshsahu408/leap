@@ -4,9 +4,12 @@ type Props = {
   size?: number
   className?: string
   ring?: boolean
+  ringTone?: 'gradient' | 'muted'
 }
 
-export default function Avatar({ src, name, size = 40, className = '', ring = false }: Props) {
+export default function Avatar({
+  src, name, size = 40, className = '', ring = false, ringTone = 'gradient',
+}: Props) {
   const initial = name?.trim()?.[0]?.toUpperCase() ?? 'F'
   const dim = `${size}px`
 
@@ -32,7 +35,7 @@ export default function Avatar({ src, name, size = 40, className = '', ring = fa
   }
 
   return (
-    <div className={`shrink-0 story-ring ${className}`}>
+    <div className={`shrink-0 story-ring ${ringTone === 'muted' ? 'story-ring--muted' : ''} ${className}`}>
       <div className="story-ring-inner">{inner}</div>
     </div>
   )

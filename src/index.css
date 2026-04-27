@@ -77,6 +77,9 @@ body {
   background: var(--gradient-foundry);
   border-radius: 9999px;
 }
+.story-ring--muted {
+  background: #d4d4d8;
+}
 .story-ring-inner {
   background: var(--color-bg);
   border-radius: 9999px;
