@@ -8,10 +8,9 @@ export default function Rooms() {
         <div className="text-[11px] uppercase tracking-wider font-semibold text-zinc-400 mb-1">
           Rooms
         </div>
-        <h1 className="font-display text-3xl">Find your people.</h1>
+        <h1 className="font-display text-3xl">Pick a corner. Make some friends.</h1>
         <p className="text-zinc-500 mt-1 text-[15px]">
-          Each room is a small home for a niche. Join the one that sounds like you —
-          or hop between them.
+          Tiny niche-sized rooms. Drop in, drop out, or settle in — whichever feels right today.
         </p>
       </header>
 

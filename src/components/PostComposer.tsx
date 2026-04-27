@@ -80,7 +80,7 @@ export default function PostComposer({ onPosted, autoFocus, variant = 'card' }: 
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder={`What are you building, ${profile?.displayName?.split(' ')[0] ?? 'founder'}?`}
+            placeholder={`What are you building, ${profile?.displayName?.split(' ')[0] ?? 'builder'}?`}
             rows={variant === 'card' ? 2 : 6}
             autoFocus={autoFocus}
             className="w-full resize-none outline-none placeholder:text-zinc-400 text-[15px] leading-snug bg-transparent"

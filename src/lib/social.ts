@@ -25,6 +25,10 @@ export type PublicUser = {
   stage?: string
   skills?: string[]
   lookingFor?: string[]
+  username?: string
+  currentProject?: string
+  niche?: string
+  canHelpWith?: string[]
   followersCount?: number
   followingCount?: number
 }
@@ -44,6 +48,10 @@ export async function fetchUser(uid: string): Promise<PublicUser | null> {
     stage: d.stage,
     skills: d.skills,
     lookingFor: d.lookingFor,
+    username: d.username,
+    currentProject: d.currentProject,
+    niche: d.niche,
+    canHelpWith: d.canHelpWith,
     followersCount: (d as PublicUser).followersCount ?? 0,
     followingCount: (d as PublicUser).followingCount ?? 0,
   }
@@ -71,6 +79,10 @@ export async function fetchPeople(excludeUid: string, max = 100): Promise<Public
         stage: x.stage,
         skills: x.skills,
         lookingFor: x.lookingFor,
+        username: x.username,
+        currentProject: x.currentProject,
+        niche: x.niche,
+        canHelpWith: x.canHelpWith,
         followersCount: (x as PublicUser).followersCount ?? 0,
         followingCount: (x as PublicUser).followingCount ?? 0,
       }

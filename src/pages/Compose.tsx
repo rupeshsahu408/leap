@@ -19,9 +19,9 @@ export default function Compose() {
 
       <div className="px-4 md:px-0 py-4 md:py-0 space-y-4">
         <div className="hidden md:block">
-          <h1 className="font-display text-2xl">Share something</h1>
+          <h1 className="font-display text-2xl">Share what you're building</h1>
           <p className="text-zinc-500 text-sm mt-1">
-            Post an update, ask a question, or share what you're building. Use #hashtags so others can discover it.
+            A win, a wall you're stuck on, a tiny demo — anything is welcome here. Add a few #tags so the right people find you.
           </p>
         </div>
         <PostComposer

@@ -96,6 +96,7 @@ export default function PostCard({ post }: { post: Post }) {
   const isOwner = user?.uid === post.authorId
   const canAskAdvisor = isOwner && !!post.text?.trim()
   const longText = (post.text?.length ?? 0) > 180
+  const isShip = !!post.dailyShipDate
 
   function askAdvisor() {
     if (!post.text) return
@@ -111,9 +112,16 @@ export default function PostCard({ post }: { post: Post }) {
           <Avatar src={post.authorPhotoURL} name={post.authorName} size={40} ring />
         </Link>
         <div className="flex-1 min-w-0">
-          <Link to={`/u/${post.authorId}`} className="font-semibold text-[14px] hover:underline">
-            {post.authorName}
-          </Link>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Link to={`/u/${post.authorId}`} className="font-semibold text-[14px] hover:underline">
+              {post.authorName}
+            </Link>
+            {isShip && (
+              <span className="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider">
+                Daily ship
+              </span>
+            )}
+          </div>
           <div className="text-[11px] text-zinc-500 truncate flex items-center gap-1.5">
             {post.authorHeadline && <span className="truncate">{post.authorHeadline}</span>}
             {post.authorHeadline && <span>·</span>}

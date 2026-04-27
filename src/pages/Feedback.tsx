@@ -24,12 +24,11 @@ export default function Feedback() {
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="text-[11px] uppercase tracking-wider font-semibold text-zinc-400 mb-1">
-              Feedback Exchange
+              Feedback exchange
             </div>
-            <h1 className="font-display text-3xl">Trade brutally honest reviews.</h1>
+            <h1 className="font-display text-3xl">Trade kind, honest feedback.</h1>
             <p className="text-zinc-500 mt-1 text-[15px] max-w-xl">
-              Drop your idea, product, or landing page. Get real critique — not "looks great!"
-              Then return the favour.
+              Share an idea, product, or landing page. Get real, useful notes — not just "looks great!" Then pay it forward.
             </p>
           </div>
           <Link

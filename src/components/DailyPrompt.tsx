@@ -74,7 +74,7 @@ export default function DailyPrompt() {
             What are you shipping today?
           </h2>
           <p className="text-[13px] text-zinc-500 mt-0.5">
-            One small thing. Bug fix counts. Pushing yourself counts.
+            One small win is plenty. A fix, a sentence, a deploy — it all counts.
           </p>
         </div>
       </div>
@@ -82,7 +82,7 @@ export default function DailyPrompt() {
       <div className="px-4 pb-4">
         {alreadyShipped ? (
           <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2.5 text-sm text-emerald-800">
-            ✓ You shipped today. See you tomorrow, builder.
+            🎉 You shipped today. Proud of you — see you tomorrow.
           </div>
         ) : (
           <div className="flex gap-2 items-center">

@@ -1,137 +1,127 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  MapPin, Briefcase, Plus, Rocket, Settings, Grid3x3, BookmarkPlus, LogOut,
+  MapPin, Briefcase, Plus, Rocket, Settings, Grid3x3, Heart, BookmarkPlus, LogOut, Share2,
 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import { fetchStartupsByMember, type Startup } from '../lib/startups'
 import StartupCard from '../components/StartupCard'
 import Avatar from '../components/Avatar'
+import PostGrid from '../components/PostGrid'
+
+type Tab = 'posts' | 'projects' | 'about'
 
 export default function Profile() {
   const { profile, user, signOut } = useAuth()
   const [ventures, setVentures] = useState<Startup[] | null>(null)
-  const [tab, setTab] = useState<'ventures' | 'about'>('ventures')
+  const [tab, setTab] = useState<Tab>('posts')
 
   useEffect(() => {
     if (!user) return
     fetchStartupsByMember(user.uid).then(setVentures)
   }, [user])
 
-  if (!profile) return null
+  if (!profile || !user) return null
 
   const followers = (profile as { followersCount?: number }).followersCount ?? 0
   const following = (profile as { followingCount?: number }).followingCount ?? 0
+  const projectCount = ventures?.length ?? 0
+
+  async function share() {
+    const url = `${window.location.origin}/u/${user!.uid}`
+    if (navigator.share) {
+      try { await navigator.share({ title: profile?.displayName ?? 'Builder', url }) } catch { /* ignore */ }
+    } else {
+      try { await navigator.clipboard.writeText(url) } catch { /* ignore */ }
+    }
+  }
 
   return (
     <div className="pb-6">
       {/* ===== Header (Instagram-style) ===== */}
-      <div className="px-4 md:px-0 pt-4 md:pt-0">
-        <div className="flex items-center gap-5 md:gap-10">
+      <div className="px-4 md:px-0 pt-5 md:pt-2">
+        <div className="flex items-center gap-6 md:gap-12">
           <Avatar
             src={profile.photoURL}
             name={profile.displayName}
-            size={88}
+            size={92}
             ring
             className="md:!p-1"
           />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-xl font-semibold truncate">{profile.displayName}</h1>
+          <div className="flex-1 min-w-0 space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h1 className="text-[20px] md:text-[22px] font-semibold truncate">
+                {profile.username ? `@${profile.username}` : profile.displayName}
+              </h1>
               <Link to="/onboarding" className="btn btn-outline !py-1.5 !px-3 text-xs">
                 <Settings className="size-3.5" />
                 Edit profile
               </Link>
+              <button onClick={share} className="btn btn-outline !py-1.5 !px-3 text-xs">
+                <Share2 className="size-3.5" /> Share
+              </button>
             </div>
 
-            {/* Stats row */}
-            <div className="hidden md:flex items-center gap-7 mt-3 text-sm">
-              <Stat label="projects" value={ventures?.length ?? 0} />
+            {/* Stats row — desktop */}
+            <div className="hidden md:flex items-center gap-7 text-[15px]">
+              <Stat label="projects" value={projectCount} />
               <Stat label="followers" value={followers} />
               <Stat label="following" value={following} />
             </div>
+
+            <div className="hidden md:block">
+              <ProfileBio profile={profile} />
+            </div>
           </div>
+        </div>
+
+        {/* Mobile: bio under header */}
+        <div className="md:hidden mt-5">
+          <ProfileBio profile={profile} />
         </div>
 
         {/* Mobile stats row */}
         <div className="md:hidden flex justify-around mt-5 pt-4 border-t border-[var(--color-line)] text-center">
-          <Stat label="projects" value={ventures?.length ?? 0} />
+          <Stat label="projects" value={projectCount} />
           <Stat label="followers" value={followers} />
           <Stat label="following" value={following} />
         </div>
 
-        {/* Handle + headline + project + bio + meta */}
-        <div className="mt-5 space-y-2 text-[14px]">
-          {profile.username && (
-            <div className="text-[13px] text-zinc-500">@{profile.username}</div>
-          )}
-          {profile.headline && <div className="font-semibold">{profile.headline}</div>}
-          {profile.currentProject && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[12px] font-medium">
-              <Rocket className="size-3.5" /> Building: {profile.currentProject}
-            </div>
-          )}
-          {profile.bio && <p className="text-zinc-700 leading-relaxed whitespace-pre-line">{profile.bio}</p>}
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-zinc-500 pt-1">
-            {profile.location && (
-              <span className="inline-flex items-center gap-1">
-                <MapPin className="size-3.5" /> {profile.location}
-              </span>
-            )}
-            {profile.stage && (
-              <span className="inline-flex items-center gap-1">
-                <Briefcase className="size-3.5" /> {profile.stage}
-              </span>
-            )}
+        {/* Quick CTA — uplifting */}
+        <div className="mt-5 rounded-2xl bg-gradient-to-br from-amber-50 via-rose-50 to-violet-50 border border-rose-100 px-4 py-3 text-[13px] flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-base">✨</span>
+            <span className="text-zinc-700 truncate">
+              Every small ship counts. What are you building today?
+            </span>
           </div>
+          <Link to="/post" className="btn btn-foundry !py-1.5 !px-3 text-xs shrink-0">
+            <Plus className="size-3.5" /> Share
+          </Link>
         </div>
-
-        {/* Skills, can help, looking-for chips */}
-        {(!!profile.skills?.length || !!profile.canHelpWith?.length || !!profile.lookingFor?.length) && (
-          <div className="mt-4 space-y-3">
-            {!!profile.skills?.length && (
-              <div className="flex flex-wrap gap-1.5">
-                {profile.skills.map((s) => (
-                  <span key={s} className="px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs">
-                    {s}
-                  </span>
-                ))}
-              </div>
-            )}
-            {!!profile.canHelpWith?.length && (
-              <div className="flex flex-wrap gap-1.5">
-                {profile.canHelpWith.map((s) => (
-                  <span key={s} className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-medium">
-                    Can help · {s}
-                  </span>
-                ))}
-              </div>
-            )}
-            {!!profile.lookingFor?.length && (
-              <div className="flex flex-wrap gap-1.5">
-                {profile.lookingFor.map((s) => (
-                  <span key={s} className="px-2.5 py-1 rounded-full bg-foundry-soft text-zinc-800 text-xs font-medium">
-                    Looking for · {s}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       {/* ===== Tabs ===== */}
       <div className="mt-6 border-t border-[var(--color-line)]">
-        <div className="flex justify-around md:justify-start md:gap-12 md:px-2 text-xs uppercase tracking-wider font-semibold">
-          <TabButton active={tab === 'ventures'} onClick={() => setTab('ventures')} icon={Grid3x3} label="Projects" />
-          <TabButton active={tab === 'about'} onClick={() => setTab('about')} icon={BookmarkPlus} label="About" />
+        <div className="flex justify-around md:justify-center md:gap-12 text-[11px] uppercase tracking-[0.12em] font-semibold">
+          <TabButton active={tab === 'posts'}    onClick={() => setTab('posts')}    icon={Grid3x3}      label="Posts" />
+          <TabButton active={tab === 'projects'} onClick={() => setTab('projects')} icon={Rocket}       label={`Projects ${projectCount ? `· ${projectCount}` : ''}`.trim()} />
+          <TabButton active={tab === 'about'}    onClick={() => setTab('about')}    icon={BookmarkPlus} label="About" />
         </div>
       </div>
 
       {/* ===== Tab content ===== */}
-      <div className="px-4 md:px-0 pt-5">
-        {tab === 'ventures' && (
-          <>
+      <div className="px-1 md:px-0 pt-3">
+        {tab === 'posts' && (
+          <PostGrid
+            uid={user.uid}
+            emptyTitle="Your grid is waiting"
+            emptyHint="Share your first ship and it'll live here forever — start with one tiny win."
+          />
+        )}
+
+        {tab === 'projects' && (
+          <div className="px-3 md:px-0 pt-3">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold">My projects</h2>
               <Link
@@ -156,11 +146,11 @@ export default function Profile() {
                 <div className="size-12 mx-auto grid place-items-center rounded-2xl bg-foundry-soft text-zinc-800">
                   <Rocket className="size-5" />
                 </div>
-                <p className="text-sm text-zinc-500 mt-3">
-                  You haven't listed a project yet.
+                <p className="text-sm text-zinc-600 mt-3">
+                  Your projects will live here. Add the one you're working on now — even if it's day one.
                 </p>
                 <Link to="/startups/new" className="btn btn-foundry mt-4 inline-flex">
-                  <Plus className="size-4" /> Create your first project
+                  <Plus className="size-4" /> Start a project page
                 </Link>
               </div>
             ) : (
@@ -170,11 +160,11 @@ export default function Profile() {
                 ))}
               </div>
             )}
-          </>
+          </div>
         )}
 
         {tab === 'about' && (
-          <div className="card p-5 space-y-3 text-sm">
+          <div className="card p-5 mx-3 md:mx-0 mt-3 space-y-3 text-sm">
             {profile.username && <Row label="Handle" value={`@${profile.username}`} />}
             {profile.email && <Row label="Email" value={profile.email} />}
             {profile.currentProject && <Row label="Building" value={profile.currentProject} />}
@@ -189,15 +179,72 @@ export default function Profile() {
       </div>
 
       {/* ===== Sign out ===== */}
-      <div className="px-4 md:px-0 mt-8">
+      <div className="px-4 md:px-0 mt-10">
         <button
           onClick={() => signOut()}
           className="text-sm text-zinc-500 hover:text-zinc-900 inline-flex items-center gap-2"
         >
-          <LogOut className="size-4" />
-          Sign out
+          <Heart className="size-4 text-rose-400" />
+          Take a break · sign out
+          <LogOut className="size-3.5" />
         </button>
       </div>
+    </div>
+  )
+}
+
+function ProfileBio({ profile }: { profile: NonNullable<ReturnType<typeof useAuth>['profile']> }) {
+  return (
+    <div className="space-y-2 text-[14px]">
+      {profile.headline && <div className="font-semibold">{profile.headline}</div>}
+      {profile.currentProject && (
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-900 text-[12px] font-medium">
+          <Rocket className="size-3.5" /> Building: {profile.currentProject}
+        </div>
+      )}
+      {profile.bio && <p className="text-zinc-700 leading-relaxed whitespace-pre-line">{profile.bio}</p>}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-zinc-500 pt-1">
+        {profile.location && (
+          <span className="inline-flex items-center gap-1">
+            <MapPin className="size-3.5" /> {profile.location}
+          </span>
+        )}
+        {profile.stage && (
+          <span className="inline-flex items-center gap-1">
+            <Briefcase className="size-3.5" /> {profile.stage}
+          </span>
+        )}
+      </div>
+
+      {(!!profile.skills?.length || !!profile.canHelpWith?.length || !!profile.lookingFor?.length) && (
+        <div className="pt-2 space-y-2">
+          {!!profile.skills?.length && (
+            <div className="flex flex-wrap gap-1.5">
+              {profile.skills.map((s) => (
+                <span key={s} className="px-2.5 py-1 rounded-full bg-zinc-100 text-zinc-700 text-xs">{s}</span>
+              ))}
+            </div>
+          )}
+          {!!profile.canHelpWith?.length && (
+            <div className="flex flex-wrap gap-1.5">
+              {profile.canHelpWith.map((s) => (
+                <span key={s} className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-medium">
+                  Can help · {s}
+                </span>
+              ))}
+            </div>
+          )}
+          {!!profile.lookingFor?.length && (
+            <div className="flex flex-wrap gap-1.5">
+              {profile.lookingFor.map((s) => (
+                <span key={s} className="px-2.5 py-1 rounded-full bg-foundry-soft text-zinc-800 text-xs font-medium">
+                  Looking for · {s}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -222,7 +269,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 py-3 border-t-2 -mt-px transition ${
+      className={`inline-flex items-center gap-1.5 py-3 border-t-2 -mt-px transition tap ${
         active
           ? 'border-zinc-900 text-zinc-900'
           : 'border-transparent text-zinc-400 hover:text-zinc-700'

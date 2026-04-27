@@ -22,7 +22,7 @@ export default function StoryRail() {
   return (
     <div className="bg-white md:rounded-2xl md:border md:border-[var(--color-line)] md:shadow-sm">
       <div className="flex items-center justify-between px-4 pt-3 md:pt-4">
-        <h2 className="text-sm font-semibold text-zinc-900">Founders Spotlight</h2>
+        <h2 className="text-sm font-semibold text-zinc-900">Today's builders</h2>
         <Link to="/network" className="text-xs font-semibold text-foundry hover:opacity-80">
           See all
         </Link>
@@ -39,7 +39,7 @@ export default function StoryRail() {
         </div>
       ) : people.length === 0 ? (
         <div className="px-4 py-4 text-sm text-zinc-500">
-          No other founders here yet — share Foundry with friends.
+          You're early! Invite a fellow builder so this row lights up.
         </div>
       ) : (
         <div className="flex gap-4 px-4 py-3 overflow-x-auto no-scrollbar">

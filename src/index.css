@@ -2,7 +2,7 @@
 
 @theme {
   /* Surfaces */
-  --color-bg: #fafafa;
+  --color-bg-base: #fafafa;
   --color-surface: #ffffff;
   --color-surface-2: #f4f4f5;
   --color-ink: #0a0a0a;
@@ -23,8 +23,14 @@
   --color-brand-900: #78350f;
 
   /* Signature gradient (used on stories, primary CTAs, logo accent) */
-  --gradient-foundry: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
-  --gradient-foundry-soft: linear-gradient(135deg, #fde68a 0%, #fbcfe8 50%, #ddd6fe 100%);
+  --gradient-foundry: linear-gradient(135deg, #fbbf24 0%, #fb7185 45%, #a855f7 100%);
+  --gradient-foundry-soft: linear-gradient(135deg, #fef3c7 0%, #fecdd3 50%, #e9d5ff 100%);
+  --gradient-sunrise: linear-gradient(135deg, #fcd34d 0%, #fb923c 60%, #f43f5e 100%);
+  --gradient-mint:    linear-gradient(135deg, #6ee7b7 0%, #34d399 100%);
+  --gradient-sky:     linear-gradient(135deg, #bae6fd 0%, #818cf8 100%);
+
+  /* A tiny bit of warmth in the page so it never feels flat */
+  --color-bg: #fbfafa;
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Playfair Display', ui-serif, Georgia, serif;
@@ -67,15 +73,34 @@ body {
 
 /* Story-style ring around an avatar (parent: relative; img on top) */
 .story-ring {
-  padding: 2px;
+  padding: 2.5px;
   background: var(--gradient-foundry);
   border-radius: 9999px;
 }
 .story-ring-inner {
   background: var(--color-bg);
   border-radius: 9999px;
-  padding: 2px;
+  padding: 2.5px;
 }
+
+/* Wordmark — Foundry's Instagram-style script lockup */
+.wordmark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: var(--gradient-foundry);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+/* Instagram-style content shell — desktop centers around 935px */
+.ig-shell { max-width: 935px; margin-left: auto; margin-right: auto; }
+
+/* Subtle lift on tap targets */
+.lift { transition: transform .15s ease; }
+.lift:active:not(:disabled) { transform: scale(0.97); }
 
 /* Animations */
 @keyframes fade-in-up {
@@ -101,6 +126,12 @@ body {
 .animate-heart-burst {
   animation: heart-burst 0.9s ease-out forwards;
 }
+
+@keyframes float-up {
+  0%   { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-26px); opacity: 0; }
+}
+.animate-float-up { animation: float-up 1.4s ease-out forwards; }
 
 @keyframes shimmer {
   0%   { background-position: -200% 0; }

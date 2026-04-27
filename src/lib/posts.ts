@@ -128,6 +128,30 @@ export function subscribeFeed(
   })
 }
 
+export function subscribeUserPosts(
+  uid: string,
+  cb: (posts: Post[]) => void,
+  max = 60,
+): Unsubscribe {
+  if (!db) return () => {}
+  const q = query(
+    collection(db, 'posts'),
+    where('authorId', '==', uid),
+    fbLimit(max),
+  )
+  return onSnapshot(q, (snap) => {
+    const list = snap.docs.map(
+      (d) => ({ id: d.id, ...(d.data() as Omit<Post, 'id'>) }),
+    )
+    list.sort((a, b) => {
+      const at = a.createdAt?.toMillis?.() ?? 0
+      const bt = b.createdAt?.toMillis?.() ?? 0
+      return bt - at
+    })
+    cb(list)
+  })
+}
+
 export function subscribeFeedByTag(
   tag: string,
   cb: (posts: Post[]) => void,

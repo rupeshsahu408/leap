@@ -5,6 +5,7 @@ import PostComposer from '../components/PostComposer'
 import PostCard from '../components/PostCard'
 import StoryRail from '../components/StoryRail'
 import DailyPrompt from '../components/DailyPrompt'
+import RightRail from '../components/RightRail'
 
 export default function Feed() {
   const [posts, setPosts] = useState<Post[] | null>(null)
@@ -14,34 +15,38 @@ export default function Feed() {
   }, [])
 
   return (
-    <div className="space-y-3 md:space-y-5">
-      <DailyPrompt />
+    <div className="lg:flex lg:gap-0 lg:items-start">
+      <div className="flex-1 min-w-0 max-w-[614px] mx-auto lg:mx-0 space-y-3 md:space-y-5">
+        <DailyPrompt />
 
-      <StoryRail />
+        <StoryRail />
 
-      <div className="px-4 md:px-0">
-        <PostComposer />
-      </div>
-
-      {posts === null && <FeedSkeleton />}
-
-      {posts && posts.length === 0 && (
-        <div className="mx-4 md:mx-0 rounded-2xl border border-dashed border-[var(--color-line)] bg-white p-8 text-center">
-          <div className="size-12 mx-auto grid place-items-center rounded-2xl bg-foundry-soft text-zinc-800">
-            <Sparkles className="size-5" />
-          </div>
-          <h2 className="mt-3 font-semibold">Your feed is quiet</h2>
-          <p className="text-sm text-zinc-500 mt-1">
-            Be the first to share what you're building. Use #hashtags so others can find your post.
-          </p>
+        <div className="px-4 md:px-0">
+          <PostComposer />
         </div>
-      )}
 
-      <div className="space-y-3 md:space-y-5">
-        {posts?.map((p) => (
-          <PostCard key={p.id} post={p} />
-        ))}
+        {posts === null && <FeedSkeleton />}
+
+        {posts && posts.length === 0 && (
+          <div className="mx-4 md:mx-0 rounded-2xl border border-dashed border-[var(--color-line)] bg-white p-8 text-center">
+            <div className="size-12 mx-auto grid place-items-center rounded-2xl bg-foundry-soft text-zinc-800">
+              <Sparkles className="size-5" />
+            </div>
+            <h2 className="mt-3 font-semibold">Your feed is brand new</h2>
+            <p className="text-sm text-zinc-500 mt-1">
+              Be the first to share what you're shipping today. Add a couple of #tags so the right people find you.
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-3 md:space-y-5">
+          {posts?.map((p) => (
+            <PostCard key={p.id} post={p} />
+          ))}
+        </div>
       </div>
+
+      <RightRail />
     </div>
   )
 }
