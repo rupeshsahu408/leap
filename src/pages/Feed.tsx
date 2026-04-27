@@ -3,6 +3,7 @@ import { Sparkles } from 'lucide-react'
 import { type Post, subscribeFeed } from '../lib/posts'
 import PostComposer from '../components/PostComposer'
 import PostCard from '../components/PostCard'
+import StoryRail from '../components/StoryRail'
 
 export default function Feed() {
   const [posts, setPosts] = useState<Post[] | null>(null)
@@ -12,26 +13,32 @@ export default function Feed() {
   }, [])
 
   return (
-    <div className="space-y-5">
-      <PostComposer />
+    <div className="space-y-3 md:space-y-5">
+      <StoryRail />
+
+      <div className="px-4 md:px-0">
+        <PostComposer />
+      </div>
 
       {posts === null && <FeedSkeleton />}
 
       {posts && posts.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-[var(--color-line)] bg-white p-8 text-center">
-          <div className="size-10 mx-auto grid place-items-center rounded-xl bg-brand-50 text-brand-600">
+        <div className="mx-4 md:mx-0 rounded-2xl border border-dashed border-[var(--color-line)] bg-white p-8 text-center">
+          <div className="size-12 mx-auto grid place-items-center rounded-2xl bg-foundry-soft text-zinc-800">
             <Sparkles className="size-5" />
           </div>
-          <h2 className="mt-3 font-semibold">No posts yet</h2>
+          <h2 className="mt-3 font-semibold">Your feed is quiet</h2>
           <p className="text-sm text-zinc-500 mt-1">
-            Be the first to share what you're building. Use #hashtags to help others find your post.
+            Be the first to share what you're building. Use #hashtags so others can find your post.
           </p>
         </div>
       )}
 
-      {posts?.map((p) => (
-        <PostCard key={p.id} post={p} />
-      ))}
+      <div className="space-y-3 md:space-y-5">
+        {posts?.map((p) => (
+          <PostCard key={p.id} post={p} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -40,17 +47,17 @@ function FeedSkeleton() {
   return (
     <div className="space-y-4">
       {[0, 1, 2].map((i) => (
-        <div key={i} className="rounded-2xl border border-[var(--color-line)] bg-white p-5 animate-pulse">
+        <div key={i} className="bg-white md:rounded-2xl md:border md:border-[var(--color-line)] p-4">
           <div className="flex gap-3">
-            <div className="size-10 rounded-full bg-zinc-100" />
+            <div className="size-10 rounded-full skeleton" />
             <div className="flex-1 space-y-2">
-              <div className="h-3 w-1/3 bg-zinc-100 rounded" />
-              <div className="h-3 w-1/4 bg-zinc-100 rounded" />
+              <div className="h-3 w-1/3 skeleton" />
+              <div className="h-3 w-1/4 skeleton" />
             </div>
           </div>
           <div className="mt-4 space-y-2">
-            <div className="h-3 bg-zinc-100 rounded" />
-            <div className="h-3 w-4/5 bg-zinc-100 rounded" />
+            <div className="h-3 skeleton" />
+            <div className="h-3 w-4/5 skeleton" />
           </div>
         </div>
       ))}

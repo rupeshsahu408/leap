@@ -3,28 +3,37 @@ type Props = {
   name?: string | null
   size?: number
   className?: string
+  ring?: boolean
 }
 
-export default function Avatar({ src, name, size = 40, className = '' }: Props) {
+export default function Avatar({ src, name, size = 40, className = '', ring = false }: Props) {
   const initial = name?.trim()?.[0]?.toUpperCase() ?? 'F'
   const dim = `${size}px`
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt=""
-        referrerPolicy="no-referrer"
-        className={`rounded-full object-cover shrink-0 ${className}`}
-        style={{ width: dim, height: dim }}
-      />
-    )
-  }
-  return (
+
+  const inner = src ? (
+    <img
+      src={src}
+      alt=""
+      referrerPolicy="no-referrer"
+      className="rounded-full object-cover block"
+      style={{ width: dim, height: dim }}
+    />
+  ) : (
     <div
-      className={`rounded-full bg-brand-100 text-brand-700 grid place-items-center font-semibold shrink-0 ${className}`}
+      className="rounded-full bg-foundry-soft text-zinc-800 grid place-items-center font-semibold"
       style={{ width: dim, height: dim, fontSize: size * 0.4 }}
     >
       {initial}
+    </div>
+  )
+
+  if (!ring) {
+    return <div className={`shrink-0 ${className}`}>{inner}</div>
+  }
+
+  return (
+    <div className={`shrink-0 story-ring ${className}`}>
+      <div className="story-ring-inner">{inner}</div>
     </div>
   )
 }

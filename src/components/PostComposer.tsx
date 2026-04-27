@@ -65,24 +65,25 @@ export default function PostComposer({ onPosted, autoFocus, variant = 'card' }: 
   }
 
   const canSubmit = !busy && (text.trim().length > 0 || !!image)
+  const remaining = 2000 - text.length
 
   const wrapperCls =
     variant === 'card'
-      ? 'rounded-2xl border border-[var(--color-line)] bg-white p-4 shadow-sm'
+      ? 'card p-4 shadow-sm'
       : ''
 
   return (
     <div className={wrapperCls}>
       <div className="flex gap-3">
-        <Avatar src={profile?.photoURL} name={profile?.displayName} size={40} />
+        <Avatar src={profile?.photoURL} name={profile?.displayName} size={42} />
         <div className="flex-1 min-w-0">
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={`What are you building, ${profile?.displayName?.split(' ')[0] ?? 'founder'}?`}
-            rows={variant === 'card' ? 2 : 5}
+            rows={variant === 'card' ? 2 : 6}
             autoFocus={autoFocus}
-            className="w-full resize-none outline-none placeholder:text-zinc-400 text-[15px] leading-snug"
+            className="w-full resize-none outline-none placeholder:text-zinc-400 text-[15px] leading-snug bg-transparent"
             maxLength={2000}
           />
 
@@ -96,7 +97,7 @@ export default function PostComposer({ onPosted, autoFocus, variant = 'card' }: 
               <button
                 type="button"
                 onClick={clearImage}
-                className="absolute top-2 right-2 size-7 rounded-full bg-black/70 text-white grid place-items-center hover:bg-black"
+                className="absolute top-2 right-2 size-8 rounded-full bg-black/70 text-white grid place-items-center hover:bg-black tap"
               >
                 <X className="size-4" />
               </button>
@@ -107,14 +108,14 @@ export default function PostComposer({ onPosted, autoFocus, variant = 'card' }: 
             <p className="mt-2 text-xs text-red-600">{error}</p>
           )}
 
-          <div className="flex items-center justify-between mt-3 pt-2 border-t border-[var(--color-line)]">
+          <div className="flex items-center justify-between mt-3 pt-3 border-t border-[var(--color-line)]">
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 onClick={() => fileInput.current?.click()}
                 disabled={!isCloudinaryConfigured || busy}
                 title={isCloudinaryConfigured ? 'Add image' : 'Image uploads need Cloudinary setup'}
-                className="size-9 grid place-items-center rounded-full text-zinc-500 hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                className="size-10 grid place-items-center rounded-full text-zinc-600 hover:bg-zinc-100 disabled:opacity-40 disabled:cursor-not-allowed tap"
               >
                 <ImagePlus className="size-5" />
               </button>
@@ -125,17 +126,19 @@ export default function PostComposer({ onPosted, autoFocus, variant = 'card' }: 
                 hidden
                 onChange={pickImage}
               />
-              <span className="text-xs text-zinc-400 ml-1">
-                {text.length > 1800 ? `${2000 - text.length} left` : ''}
-              </span>
+              {remaining < 200 && (
+                <span className={`text-xs ml-2 ${remaining < 0 ? 'text-red-600' : 'text-zinc-400'}`}>
+                  {remaining}
+                </span>
+              )}
             </div>
             <button
               onClick={submit}
               disabled={!canSubmit}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-zinc-900 text-white text-sm font-medium hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed"
+              className={`btn ${canSubmit ? 'btn-foundry' : 'btn-primary'}`}
             >
               {busy && <Loader2 className="size-4 animate-spin" />}
-              Post
+              Share
             </button>
           </div>
         </div>

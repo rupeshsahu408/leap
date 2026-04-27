@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #fafaf9;
+  /* Surfaces */
+  --color-bg: #fafafa;
   --color-surface: #ffffff;
-  --color-ink: #18181b;
+  --color-surface-2: #f4f4f5;
+  --color-ink: #0a0a0a;
   --color-ink-soft: #52525b;
-  --color-line: #e4e4e7;
+  --color-line: #ededed;
+  --color-line-soft: #f4f4f5;
 
+  /* Brand: warm amber (Foundry's anchor) */
   --color-brand-50: #fffbeb;
   --color-brand-100: #fef3c7;
   --color-brand-200: #fde68a;
@@ -17,6 +21,10 @@
   --color-brand-700: #b45309;
   --color-brand-800: #92400e;
   --color-brand-900: #78350f;
+
+  /* Signature gradient (used on stories, primary CTAs, logo accent) */
+  --gradient-foundry: linear-gradient(135deg, #f59e0b 0%, #ec4899 50%, #8b5cf6 100%);
+  --gradient-foundry-soft: linear-gradient(135deg, #fde68a 0%, #fbcfe8 50%, #ddd6fe 100%);
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Playfair Display', ui-serif, Georgia, serif;
@@ -35,32 +43,147 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: none;
+  text-rendering: optimizeLegibility;
 }
+
+/* Safe-area utilities for iOS PWA */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-top    { padding-top:  env(safe-area-inset-top); }
 
 .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
 }
 
+/* Foundry signature gradient — text & background helpers */
+.text-foundry {
+  background: var(--gradient-foundry);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.bg-foundry { background: var(--gradient-foundry); }
+.bg-foundry-soft { background: var(--gradient-foundry-soft); }
+
+/* Story-style ring around an avatar (parent: relative; img on top) */
+.story-ring {
+  padding: 2px;
+  background: var(--gradient-foundry);
+  border-radius: 9999px;
+}
+.story-ring-inner {
+  background: var(--color-bg);
+  border-radius: 9999px;
+  padding: 2px;
+}
+
+/* Animations */
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-in-up { animation: fade-in-up 0.4s ease-out both; }
+.animate-fade-in-up { animation: fade-in-up 0.35s ease-out both; }
 
+@keyframes pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.35); }
+  60%  { transform: scale(0.92); }
+  100% { transform: scale(1); }
+}
+.animate-pop { animation: pop 0.45s cubic-bezier(.2,.9,.3,1.4); }
+
+@keyframes heart-burst {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  20%  { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  60%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+.animate-heart-burst {
+  animation: heart-burst 0.9s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #f4f4f5 0%, #ececef 50%, #f4f4f5 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+/* Hide scrollbars where we want a clean horizontal carousel */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+
+/* Form controls */
 .input {
   width: 100%;
-  padding: 0.625rem 0.875rem;
-  border-radius: 0.75rem;
+  padding: 0.7rem 0.95rem;
+  border-radius: 0.875rem;
   border: 1px solid var(--color-line);
-  background: #fff;
-  font-size: 0.875rem;
+  background: var(--color-surface);
+  font-size: 0.9rem;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
 }
 .input:focus {
-  border-color: var(--color-brand-500);
+  border-color: var(--color-ink);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
 }
-.input::placeholder {
-  color: #a1a1aa;
+.input::placeholder { color: #a1a1aa; }
+
+/* Button utilities */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.15rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: transform 0.08s ease, opacity 0.15s, background 0.15s, color 0.15s;
+  user-select: none;
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--color-ink);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) { background: #27272a; }
+
+.btn-foundry {
+  background: var(--gradient-foundry);
+  color: #fff;
+  box-shadow: 0 6px 18px -8px rgba(236, 72, 153, 0.5);
+}
+.btn-foundry:hover:not(:disabled) { filter: brightness(1.05); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--color-surface-2); }
+
+.btn-outline {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-line);
+}
+.btn-outline:hover:not(:disabled) { background: var(--color-surface-2); }
+
+/* Card */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 1rem;
+}
+
+/* Tap targets feel right on touch */
+@media (pointer: coarse) {
+  .tap { min-width: 44px; min-height: 44px; }
 }

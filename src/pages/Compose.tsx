@@ -1,19 +1,35 @@
 import { useNavigate } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 import PostComposer from '../components/PostComposer'
 
 export default function Compose() {
   const navigate = useNavigate()
   return (
-    <div className="space-y-4">
-      <h1 className="font-display text-2xl">Share something</h1>
-      <p className="text-zinc-500 text-sm -mt-2">
-        Post an update, ask a question, or share what you're building. Use #hashtags so others can discover it.
-      </p>
-      <PostComposer
-        autoFocus
-        variant="card"
-        onPosted={() => navigate('/', { replace: true })}
-      />
+    <div className="md:max-w-xl md:mx-auto">
+      <div className="md:hidden flex items-center gap-2 px-2 py-3 border-b border-[var(--color-line)] bg-white sticky top-14 z-10">
+        <button
+          onClick={() => navigate(-1)}
+          className="size-10 grid place-items-center rounded-full hover:bg-zinc-100 tap"
+          aria-label="Back"
+        >
+          <ChevronLeft className="size-5" />
+        </button>
+        <h1 className="font-semibold text-base">New post</h1>
+      </div>
+
+      <div className="px-4 md:px-0 py-4 md:py-0 space-y-4">
+        <div className="hidden md:block">
+          <h1 className="font-display text-2xl">Share something</h1>
+          <p className="text-zinc-500 text-sm mt-1">
+            Post an update, ask a question, or share what you're building. Use #hashtags so others can discover it.
+          </p>
+        </div>
+        <PostComposer
+          autoFocus
+          variant="card"
+          onPosted={() => navigate('/', { replace: true })}
+        />
+      </div>
     </div>
   )
 }

@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Heart, MessageCircle, Sparkles, Trash2 } from 'lucide-react'
+import {
+  Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Sparkles, Trash2,
+} from 'lucide-react'
 import { useAuth } from '../lib/auth'
 import {
   type Post,
@@ -25,6 +27,11 @@ export default function PostCard({ post }: { post: Post }) {
   const [commentText, setCommentText] = useState('')
   const [submittingComment, setSubmittingComment] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
+  const [bursting, setBursting] = useState(false)
+  const [popping, setPopping] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const lastTap = useRef(0)
 
   useEffect(() => {
     if (!user) return
@@ -36,13 +43,32 @@ export default function PostCard({ post }: { post: Post }) {
     return subscribeComments(post.id, setComments)
   }, [showComments, post.id])
 
-  async function handleLike() {
+  async function performLike(forceLike = false) {
     if (!user) return
-    setLiked((v) => !v) // optimistic
+    if (forceLike && liked) return
+    setLiked((v) => (forceLike ? true : !v))
+    setPopping(true)
+    setTimeout(() => setPopping(false), 450)
     try {
-      await toggleLike(post.id, user.uid)
+      if (forceLike) {
+        if (!liked) await toggleLike(post.id, user.uid)
+      } else {
+        await toggleLike(post.id, user.uid)
+      }
     } catch {
       setLiked((v) => !v)
+    }
+  }
+
+  function handleImageTap() {
+    const now = Date.now()
+    if (now - lastTap.current < 300) {
+      lastTap.current = 0
+      setBursting(true)
+      setTimeout(() => setBursting(false), 900)
+      performLike(true)
+    } else {
+      lastTap.current = now
     }
   }
 
@@ -69,141 +95,240 @@ export default function PostCard({ post }: { post: Post }) {
 
   const isOwner = user?.uid === post.authorId
   const canAskAdvisor = isOwner && !!post.text?.trim()
+  const longText = (post.text?.length ?? 0) > 180
 
   function askAdvisor() {
     if (!post.text) return
     navigate('/advisor', { state: { seed: postFeedbackPrompt(post.text) } })
+    setShowMenu(false)
   }
 
   return (
-    <article className="rounded-2xl border border-[var(--color-line)] bg-white shadow-sm overflow-hidden">
-      <div className="p-4 sm:p-5">
-        <header className="flex items-start gap-3">
-          <Link to={`/u/${post.authorId}`} className="shrink-0">
-            <Avatar src={post.authorPhotoURL} name={post.authorName} size={42} />
+    <article className="bg-white md:rounded-2xl md:border md:border-[var(--color-line)] md:shadow-sm overflow-hidden">
+      {/* ===== Header ===== */}
+      <header className="flex items-center gap-3 px-4 py-3">
+        <Link to={`/u/${post.authorId}`} className="shrink-0">
+          <Avatar src={post.authorPhotoURL} name={post.authorName} size={40} ring />
+        </Link>
+        <div className="flex-1 min-w-0">
+          <Link to={`/u/${post.authorId}`} className="font-semibold text-[14px] hover:underline">
+            {post.authorName}
           </Link>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <Link to={`/u/${post.authorId}`} className="font-semibold text-[15px] hover:underline">
-                {post.authorName}
-              </Link>
-              <span className="text-xs text-zinc-400">· {timeAgo(post.createdAt)}</span>
-            </div>
-            {post.authorHeadline && (
-              <div className="text-xs text-zinc-500 truncate">{post.authorHeadline}</div>
-            )}
+          <div className="text-[11px] text-zinc-500 truncate flex items-center gap-1.5">
+            {post.authorHeadline && <span className="truncate">{post.authorHeadline}</span>}
+            {post.authorHeadline && <span>·</span>}
+            <span>{timeAgo(post.createdAt)}</span>
           </div>
-          {isOwner && (
-            <button
-              onClick={() => setConfirmDelete(true)}
-              className="text-zinc-400 hover:text-red-600 p-1"
-              title="Delete post"
-            >
-              <Trash2 className="size-4" />
-            </button>
+        </div>
+        <div className="relative">
+          <button
+            onClick={() => setShowMenu((v) => !v)}
+            className="size-9 grid place-items-center rounded-full text-zinc-500 hover:bg-zinc-100 tap"
+          >
+            <MoreHorizontal className="size-5" />
+          </button>
+          {showMenu && (
+            <>
+              <button
+                className="fixed inset-0 z-10 cursor-default"
+                onClick={() => setShowMenu(false)}
+                aria-label="Close menu"
+              />
+              <div className="absolute right-0 top-10 z-20 w-48 rounded-xl border border-[var(--color-line)] bg-white shadow-lg overflow-hidden">
+                {canAskAdvisor && (
+                  <button
+                    onClick={askAdvisor}
+                    className="w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 hover:bg-zinc-50"
+                  >
+                    <Sparkles className="size-4 text-amber-500" />
+                    Ask AI Advisor
+                  </button>
+                )}
+                <Link
+                  to={`/u/${post.authorId}`}
+                  className="w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 hover:bg-zinc-50"
+                  onClick={() => setShowMenu(false)}
+                >
+                  View profile
+                </Link>
+                {isOwner && (
+                  <button
+                    onClick={() => { setShowMenu(false); setConfirmDelete(true) }}
+                    className="w-full px-3 py-2.5 text-left text-sm flex items-center gap-2 hover:bg-red-50 text-red-600"
+                  >
+                    <Trash2 className="size-4" />
+                    Delete post
+                  </button>
+                )}
+              </div>
+            </>
           )}
-        </header>
+        </div>
+      </header>
 
-        {post.text && (
-          <div className="mt-3 text-[15px] leading-relaxed">
-            <HashtagText text={post.text} />
-          </div>
-        )}
-      </div>
-
+      {/* ===== Image ===== */}
       {post.imageUrl && (
-        <div className="border-t border-[var(--color-line)] bg-zinc-50">
+        <div
+          className="relative bg-black/[.02] cursor-pointer select-none"
+          onClick={handleImageTap}
+        >
           <img
             src={post.imageUrl}
             alt=""
-            className="w-full max-h-[600px] object-cover"
+            className="w-full max-h-[640px] object-cover"
             loading="lazy"
+            draggable={false}
           />
+          {bursting && (
+            <Heart
+              className="absolute top-1/2 left-1/2 size-28 text-white animate-heart-burst pointer-events-none"
+              fill="currentColor"
+              style={{ filter: 'drop-shadow(0 4px 14px rgba(0,0,0,0.35))' }}
+            />
+          )}
         </div>
       )}
 
-      <footer className="px-4 sm:px-5 py-2 border-t border-[var(--color-line)] flex items-center gap-1">
-        <button
-          onClick={handleLike}
-          className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm transition ${
-            liked ? 'text-rose-600' : 'text-zinc-600 hover:bg-zinc-100'
-          }`}
-        >
-          <Heart className={`size-4 ${liked ? 'fill-rose-600' : ''}`} />
-          <span>{post.likeCount || 0}</span>
-        </button>
-        <button
-          onClick={() => setShowComments((v) => !v)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm text-zinc-600 hover:bg-zinc-100"
-        >
-          <MessageCircle className="size-4" />
-          <span>{post.commentCount || 0}</span>
-        </button>
-        {canAskAdvisor && (
+      {/* ===== Action bar ===== */}
+      <footer className="px-4 pt-3">
+        <div className="flex items-center gap-1">
           <button
-            onClick={askAdvisor}
-            title="Get advisor feedback on this post"
-            className="ml-auto inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-sm text-brand-700 hover:bg-brand-50"
+            onClick={() => performLike()}
+            className="size-10 grid place-items-center rounded-full hover:bg-zinc-100 tap"
+            aria-label={liked ? 'Unlike' : 'Like'}
           >
-            <Sparkles className="size-4" />
-            <span className="hidden sm:inline">Ask advisor</span>
+            <Heart
+              className={`size-6 transition-colors ${liked ? 'text-rose-500' : 'text-zinc-800'} ${
+                popping ? 'animate-pop' : ''
+              }`}
+              fill={liked ? 'currentColor' : 'none'}
+              strokeWidth={2}
+            />
+          </button>
+          <button
+            onClick={() => setShowComments((v) => !v)}
+            className="size-10 grid place-items-center rounded-full hover:bg-zinc-100 tap"
+            aria-label="Comments"
+          >
+            <MessageCircle className="size-6 text-zinc-800" strokeWidth={2} />
+          </button>
+          <button
+            onClick={() => navigate(`/u/${post.authorId}`)}
+            className="size-10 grid place-items-center rounded-full hover:bg-zinc-100 tap"
+            aria-label="Send"
+            title="Visit profile to message"
+          >
+            <Send className="size-6 text-zinc-800" strokeWidth={2} />
+          </button>
+          <button
+            className="ml-auto size-10 grid place-items-center rounded-full hover:bg-zinc-100 tap"
+            aria-label="Save"
+            title="Save (coming soon)"
+            disabled
+          >
+            <Bookmark className="size-6 text-zinc-300" strokeWidth={2} />
+          </button>
+        </div>
+
+        {/* Like count */}
+        {(post.likeCount ?? 0) > 0 && (
+          <div className="px-1 mt-1 text-[14px] font-semibold">
+            {post.likeCount} {post.likeCount === 1 ? 'like' : 'likes'}
+          </div>
+        )}
+
+        {/* Caption */}
+        {post.text && (
+          <div className="px-1 mt-1 text-[14px] leading-snug">
+            <Link to={`/u/${post.authorId}`} className="font-semibold mr-1.5 hover:underline">
+              {post.authorName}
+            </Link>
+            <span className={!expanded && longText ? 'line-clamp-3' : ''}>
+              <HashtagText text={post.text} />
+            </span>
+            {longText && !expanded && (
+              <button
+                onClick={() => setExpanded(true)}
+                className="text-zinc-500 ml-1 hover:text-zinc-700"
+              >
+                more
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* View comments */}
+        {(post.commentCount ?? 0) > 0 && !showComments && (
+          <button
+            onClick={() => setShowComments(true)}
+            className="block px-1 mt-1.5 text-[13px] text-zinc-500 hover:text-zinc-700"
+          >
+            View all {post.commentCount} {post.commentCount === 1 ? 'comment' : 'comments'}
           </button>
         )}
+
+        <div className="text-[10px] uppercase tracking-wide text-zinc-400 px-1 mt-1.5 pb-3">
+          {timeAgo(post.createdAt)}
+        </div>
       </footer>
 
+      {/* ===== Comments ===== */}
       {showComments && (
-        <div className="border-t border-[var(--color-line)] bg-zinc-50/50 px-4 sm:px-5 py-3 space-y-3">
+        <div className="border-t border-[var(--color-line)] bg-zinc-50/40 px-4 py-3 space-y-3">
           {comments.length === 0 && (
             <p className="text-sm text-zinc-500">Be the first to comment.</p>
           )}
           {comments.map((c) => (
             <div key={c.id} className="flex gap-2.5">
-              <Avatar src={c.authorPhotoURL} name={c.authorName} size={30} />
+              <Avatar src={c.authorPhotoURL} name={c.authorName} size={28} />
               <div className="flex-1 min-w-0">
-                <div className="bg-white rounded-2xl px-3 py-2 border border-[var(--color-line)]">
-                  <div className="text-xs font-semibold">{c.authorName}</div>
-                  <div className="text-sm mt-0.5">
-                    <HashtagText text={c.text} />
-                  </div>
+                <div className="text-[14px] leading-snug">
+                  <span className="font-semibold mr-1.5">{c.authorName}</span>
+                  <HashtagText text={c.text} />
                 </div>
-                <div className="text-[10px] text-zinc-400 mt-1 ml-3">{timeAgo(c.createdAt)}</div>
+                <div className="text-[11px] text-zinc-400 mt-0.5">{timeAgo(c.createdAt)}</div>
               </div>
             </div>
           ))}
 
-          <div className="flex gap-2 items-end pt-2">
-            <Avatar src={profile?.photoURL} name={profile?.displayName} size={30} />
-            <div className="flex-1 flex gap-2">
-              <input
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
-                placeholder="Write a comment…"
-                className="flex-1 px-3 py-2 rounded-full border border-zinc-200 bg-white text-sm outline-none focus:border-brand-500"
-                maxLength={500}
-              />
-              <button
-                onClick={handleAddComment}
-                disabled={submittingComment || !commentText.trim()}
-                className="px-4 py-2 rounded-full bg-zinc-900 text-white text-sm font-medium disabled:opacity-40"
-              >
-                Send
-              </button>
-            </div>
+          <div className="flex gap-2 items-center pt-2">
+            <Avatar src={profile?.photoURL} name={profile?.displayName} size={28} />
+            <input
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
+              placeholder="Add a comment…"
+              className="flex-1 px-0 py-1.5 bg-transparent text-sm outline-none placeholder:text-zinc-400"
+              maxLength={500}
+            />
+            <button
+              onClick={handleAddComment}
+              disabled={submittingComment || !commentText.trim()}
+              className="text-foundry text-sm font-semibold disabled:opacity-30 px-2 py-1.5 tap"
+            >
+              Post
+            </button>
           </div>
         </div>
       )}
 
+      {/* ===== Delete confirm ===== */}
       {confirmDelete && (
-        <div className="fixed inset-0 z-30 grid place-items-center bg-black/40 p-4" onClick={() => setConfirmDelete(false)}>
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 z-40 grid place-items-center bg-black/50 p-4 animate-fade-in-up"
+          onClick={() => setConfirmDelete(false)}
+        >
+          <div
+            className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="font-semibold text-lg">Delete this post?</h3>
             <p className="text-sm text-zinc-500 mt-1">This can't be undone.</p>
             <div className="flex justify-end gap-2 mt-5">
-              <button onClick={() => setConfirmDelete(false)} className="px-4 py-2 rounded-xl text-zinc-600 hover:bg-zinc-100">
+              <button onClick={() => setConfirmDelete(false)} className="btn btn-ghost">
                 Cancel
               </button>
-              <button onClick={handleDelete} className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700">
+              <button onClick={handleDelete} className="btn bg-red-600 text-white hover:bg-red-700">
                 Delete
               </button>
             </div>
