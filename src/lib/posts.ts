@@ -17,6 +17,9 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { notify } from './notifications'
+
+type Actor = { uid: string; name: string; photoURL?: string }
 
 export type Post = {
   id: string
@@ -186,20 +189,44 @@ export function subscribeUserLike(
   return onSnapshot(ref, (snap) => cb(snap.exists()))
 }
 
-export async function toggleLike(postId: string, uid: string): Promise<void> {
+export async function toggleLike(
+  postId: string,
+  uid: string,
+  actor?: Actor,
+): Promise<void> {
   if (!db) throw new Error('Firestore not configured')
   const postRef = doc(db, 'posts', postId)
   const likeRef = doc(db, 'posts', postId, 'likes', uid)
+  let liked = false
+  let post: Post | undefined
   await runTransaction(db, async (tx) => {
     const likeSnap = await tx.get(likeRef)
+    const postSnap = await tx.get(postRef)
+    if (postSnap.exists()) {
+      post = { id: postSnap.id, ...(postSnap.data() as Omit<Post, 'id'>) }
+    }
     if (likeSnap.exists()) {
       tx.delete(likeRef)
       tx.update(postRef, { likeCount: increment(-1) })
+      liked = false
     } else {
       tx.set(likeRef, { createdAt: serverTimestamp() })
       tx.update(postRef, { likeCount: increment(1) })
+      liked = true
     }
   })
+  if (liked && actor && post) {
+    await notify({
+      recipientId: post.authorId,
+      actorId: actor.uid,
+      actorName: actor.name,
+      actorPhotoURL: actor.photoURL,
+      kind: 'like',
+      postId,
+      postPreview: post.text?.slice(0, 80),
+      postImage: post.imageUrl,
+    })
+  }
 }
 
 export function subscribeComments(
@@ -230,9 +257,11 @@ export async function addComment(input: AddCommentInput): Promise<void> {
   if (!db) throw new Error('Firestore not configured')
   const postRef = doc(db, 'posts', input.postId)
   const commentsRef = collection(db, 'posts', input.postId, 'comments')
+  let post: Post | undefined
   await runTransaction(db, async (tx) => {
-    const post = await tx.get(postRef)
-    if (!post.exists()) throw new Error('Post not found')
+    const snap = await tx.get(postRef)
+    if (!snap.exists()) throw new Error('Post not found')
+    post = { id: snap.id, ...(snap.data() as Omit<Post, 'id'>) }
     const newRef = doc(commentsRef)
     tx.set(newRef, {
       authorId: input.authorId,
@@ -243,6 +272,19 @@ export async function addComment(input: AddCommentInput): Promise<void> {
     })
     tx.update(postRef, { commentCount: increment(1) })
   })
+  if (post) {
+    await notify({
+      recipientId: post.authorId,
+      actorId: input.authorId,
+      actorName: input.authorName,
+      actorPhotoURL: input.authorPhotoURL,
+      kind: 'comment',
+      postId: input.postId,
+      postPreview: post.text?.slice(0, 80),
+      postImage: post.imageUrl,
+      commentText: input.text.trim().slice(0, 140),
+    })
+  }
 }
 
 export async function getPost(postId: string): Promise<Post | null> {

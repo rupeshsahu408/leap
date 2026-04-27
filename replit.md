@@ -45,6 +45,7 @@ src/
 │   ├── buildLog.ts      # NEW — append-only build log entries (subcollection on each startup)
 │   ├── feedback.ts      # NEW — feedback requests + structured reviews (top-level "feedback" collection)
 │   ├── stories.ts       # NEW — Instagram-style 24-hour stories (top-level "stories" collection, client-side TTL filter + seen-set in localStorage)
+│   ├── notifications.ts # NEW — likes/comments/follows feed (top-level "notifications" collection, unread count subscription)
 │   ├── rooms.ts         # NEW — hardcoded niche room metadata (slug, name, emoji, accent)
 │   ├── daily.ts         # NEW — todayKey() / prettyDate() helpers for the daily ship thread
 │   ├── match.ts         # Co-founder scoring + ranking (client-side)
@@ -82,6 +83,8 @@ src/
     ├── Feedback.tsx     # NEW — feedback exchange list with kind tabs at /feedback
     ├── FeedbackNew.tsx  # NEW — submit a feedback request
     ├── FeedbackPost.tsx # NEW — single feedback request + reviews at /feedback/:id
+    ├── Activity.tsx     # NEW — notifications inbox at /activity (likes, comments, follows)
+    ├── PostDetail.tsx   # NEW — single post view at /p/:id (post + comments + likes)
     ├── Startups.tsx     # Projects directory at /startups
     ├── StartupNew.tsx   # Create project form
     ├── StartupView.tsx  # Public project page at /startups/:id (now includes build log)

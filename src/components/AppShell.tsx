@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, Link, useNavigate } from 'react-router-dom'
 import {
   Home, Search, PlusSquare, Heart, Send, Compass, MessageCircle,
   Sparkles, Rocket, Bot, LogOut, Hash, MessageSquareHeart,
 } from 'lucide-react'
 import { useAuth } from '../lib/auth'
+import { subscribeUnreadCount } from '../lib/notifications'
 import Logo from './Logo'
 import Avatar from './Avatar'
 
@@ -16,12 +18,13 @@ type NavItem = {
 
 // Instagram-style sidebar — feels like one tall list
 const sidebarMain: NavItem[] = [
-  { to: '/',          icon: Home,              label: 'Home', end: true },
-  { to: '/rooms',     icon: Compass,           label: 'Rooms' },
-  { to: '/network',   icon: Search,            label: 'Discover' },
-  { to: '/messages',  icon: Send,              label: 'Messages' },
+  { to: '/',          icon: Home,               label: 'Home', end: true },
+  { to: '/rooms',     icon: Compass,            label: 'Rooms' },
+  { to: '/network',   icon: Search,             label: 'Discover' },
+  { to: '/messages',  icon: Send,               label: 'Messages' },
+  { to: '/activity',  icon: Heart,              label: 'Activity' },
   { to: '/feedback',  icon: MessageSquareHeart, label: 'Feedback' },
-  { to: '/post',      icon: PlusSquare,        label: 'Create' },
+  { to: '/post',      icon: PlusSquare,         label: 'Create' },
 ]
 
 const sidebarExtras: NavItem[] = [
@@ -31,9 +34,15 @@ const sidebarExtras: NavItem[] = [
 ]
 
 export default function AppShell() {
-  const { profile, signOut } = useAuth()
+  const { user, profile, signOut } = useAuth()
   const location = useLocation()
   const navigate = useNavigate()
+  const [unread, setUnread] = useState(0)
+
+  useEffect(() => {
+    if (!user) return
+    return subscribeUnreadCount(user.uid, setUnread)
+  }, [user])
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[var(--color-bg)]">
@@ -47,7 +56,11 @@ export default function AppShell() {
 
         <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
           {sidebarMain.map((item) => (
-            <SidebarLink key={item.to} {...item} />
+            <SidebarLink
+              key={item.to}
+              {...item}
+              badge={item.to === '/activity' ? unread : 0}
+            />
           ))}
           <div className="my-3 border-t border-[var(--color-line)]" />
           {sidebarExtras.map((item) => (
@@ -87,12 +100,17 @@ export default function AppShell() {
           </Link>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => navigate('/feedback')}
-              className="size-10 grid place-items-center rounded-full text-zinc-800 hover:bg-zinc-100 lift"
-              title="Feedback exchange"
-              aria-label="Feedback exchange"
+              onClick={() => navigate('/activity')}
+              className="relative size-10 grid place-items-center rounded-full text-zinc-800 hover:bg-zinc-100 lift"
+              title="Activity"
+              aria-label="Activity"
             >
               <Heart className="size-[22px]" strokeWidth={2} />
+              {unread > 0 && (
+                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-[16px] px-[4px] grid place-items-center text-[10px] font-bold leading-none text-white bg-rose-500 rounded-full ring-2 ring-white">
+                  {unread > 9 ? '9+' : unread}
+                </span>
+              )}
             </button>
             <button
               onClick={() => navigate('/messages')}
@@ -122,7 +140,7 @@ export default function AppShell() {
           <BottomTab to="/"          icon={Home}       label="Home" end />
           <BottomTab to="/rooms"     icon={Hash}       label="Rooms" />
           <BottomTab to="/post"      icon={PlusSquare} label="Create" center />
-          <BottomTab to="/feedback"  icon={Heart}      label="Activity" />
+          <BottomTab to="/activity"  icon={Heart}      label="Activity" badge={unread} />
           <BottomTab
             to="/profile"
             icon={MessageCircle /* placeholder, overridden by avatar */}
@@ -136,7 +154,7 @@ export default function AppShell() {
   )
 }
 
-function SidebarLink({ to, icon: Icon, label, end }: NavItem) {
+function SidebarLink({ to, icon: Icon, label, end, badge = 0 }: NavItem & { badge?: number }) {
   return (
     <NavLink
       to={to}
@@ -151,11 +169,18 @@ function SidebarLink({ to, icon: Icon, label, end }: NavItem) {
     >
       {({ isActive }) => (
         <>
-          <Icon
-            className="size-6 shrink-0"
-            strokeWidth={isActive ? 2.4 : 1.8}
-            fill={isActive ? 'currentColor' : 'none'}
-          />
+          <span className="relative shrink-0">
+            <Icon
+              className="size-6"
+              strokeWidth={isActive ? 2.4 : 1.8}
+              fill={isActive ? 'currentColor' : 'none'}
+            />
+            {badge > 0 && (
+              <span className="absolute -top-1 -right-1.5 min-w-[16px] h-[16px] px-[4px] grid place-items-center text-[10px] font-bold leading-none text-white bg-rose-500 rounded-full ring-2 ring-white">
+                {badge > 9 ? '9+' : badge}
+              </span>
+            )}
+          </span>
           <span className="truncate">{label}</span>
         </>
       )}
@@ -164,11 +189,12 @@ function SidebarLink({ to, icon: Icon, label, end }: NavItem) {
 }
 
 function BottomTab({
-  to, icon: Icon, label, end, center, avatarSrc, avatarName,
+  to, icon: Icon, label, end, center, avatarSrc, avatarName, badge = 0,
 }: NavItem & {
   center?: boolean
   avatarSrc?: string | null
   avatarName?: string | null
+  badge?: number
 }) {
   return (
     <NavLink
@@ -202,11 +228,18 @@ function BottomTab({
               />
             </span>
           ) : (
-            <Icon
-              className="size-6"
-              strokeWidth={isActive ? 2.5 : 1.8}
-              fill={isActive ? 'currentColor' : 'none'}
-            />
+            <span className="relative">
+              <Icon
+                className="size-6"
+                strokeWidth={isActive ? 2.5 : 1.8}
+                fill={isActive ? 'currentColor' : 'none'}
+              />
+              {badge > 0 && (
+                <span className="absolute -top-1 -right-1.5 min-w-[15px] h-[15px] px-[3px] grid place-items-center text-[9px] font-bold leading-none text-white bg-rose-500 rounded-full ring-2 ring-white">
+                  {badge > 9 ? '9+' : badge}
+                </span>
+              )}
+            </span>
           )}
           <span className={isActive ? 'text-[var(--color-ink)]' : ''}>{label}</span>
         </>

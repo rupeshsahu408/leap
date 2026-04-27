@@ -67,11 +67,14 @@ export default function PostCard({ post }: { post: Post }) {
     setLiked((v) => (forceLike ? true : !v))
     setPopping(true)
     setTimeout(() => setPopping(false), 450)
+    const actor = profile
+      ? { uid: user.uid, name: profile.displayName || 'Builder', photoURL: profile.photoURL }
+      : undefined
     try {
       if (forceLike) {
-        if (!liked) await toggleLike(post.id, user.uid)
+        if (!liked) await toggleLike(post.id, user.uid, actor)
       } else {
-        await toggleLike(post.id, user.uid)
+        await toggleLike(post.id, user.uid, actor)
       }
     } catch {
       setLiked((v) => !v)

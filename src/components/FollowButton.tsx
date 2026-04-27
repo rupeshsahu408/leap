@@ -9,7 +9,7 @@ type Props = {
 }
 
 export default function FollowButton({ targetUid, size = 'md' }: Props) {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const [following, setFollowing] = useState(false)
   const [busy, setBusy] = useState(false)
 
@@ -24,8 +24,14 @@ export default function FollowButton({ targetUid, size = 'md' }: Props) {
     if (!user || busy) return
     setBusy(true)
     try {
-      if (following) await unfollow(user.uid, targetUid)
-      else await follow(user.uid, targetUid)
+      if (following) {
+        await unfollow(user.uid, targetUid)
+      } else {
+        await follow(user.uid, targetUid, {
+          name: profile?.displayName || 'Builder',
+          photoURL: profile?.photoURL,
+        })
+      }
     } finally {
       setBusy(false)
     }

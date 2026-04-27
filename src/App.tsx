@@ -23,6 +23,8 @@ import Room from './pages/Room'
 import Feedback from './pages/Feedback'
 import FeedbackNew from './pages/FeedbackNew'
 import FeedbackPost from './pages/FeedbackPost'
+import Activity from './pages/Activity'
+import PostDetail from './pages/PostDetail'
 import AppShell from './components/AppShell'
 
 function Loading() {
@@ -94,6 +96,8 @@ export default function App() {
             <Route path="feedback" element={<Feedback />} />
             <Route path="feedback/new" element={<FeedbackNew />} />
             <Route path="feedback/:id" element={<FeedbackPost />} />
+            <Route path="activity" element={<Activity />} />
+            <Route path="p/:id" element={<PostDetail />} />
             <Route path="match" element={<Match />} />
             <Route path="advisor" element={<Advisor />} />
             <Route path="profile" element={<Profile />} />

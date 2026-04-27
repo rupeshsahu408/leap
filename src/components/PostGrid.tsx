@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Heart, ImageIcon, MessageCircle } from 'lucide-react'
 import { type Post, subscribeUserPosts, subscribeSavedPosts } from '../lib/posts'
 import HashtagText from './HashtagText'
@@ -77,10 +78,9 @@ function PostTile({ post, idx }: { post: Post; idx: number }) {
   const cmts = post.commentCount ?? 0
 
   return (
-    <a
-      href={`/u/${post.authorId}`}
+    <Link
+      to={`/p/${post.id}`}
       className="group relative aspect-square overflow-hidden rounded-sm md:rounded-md bg-white"
-      onClick={(e) => e.preventDefault()}
       title={post.text || 'Post'}
     >
       {post.imageUrl ? (
@@ -113,6 +113,6 @@ function PostTile({ post, idx }: { post: Post; idx: number }) {
           <MessageCircle className="size-4" fill="currentColor" /> {cmts}
         </span>
       </div>
-    </a>
+    </Link>
   )
 }

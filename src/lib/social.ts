@@ -101,7 +101,11 @@ export function subscribeIsFollowing(
   )
 }
 
-export async function follow(meUid: string, otherUid: string): Promise<void> {
+export async function follow(
+  meUid: string,
+  otherUid: string,
+  actor?: { name: string; photoURL?: string },
+): Promise<void> {
   if (!db || meUid === otherUid) return
   const batch = writeBatch(db)
   batch.set(doc(db, 'users', meUid, 'following', otherUid), {
@@ -113,6 +117,16 @@ export async function follow(meUid: string, otherUid: string): Promise<void> {
   batch.update(doc(db, 'users', meUid), { followingCount: increment(1) })
   batch.update(doc(db, 'users', otherUid), { followersCount: increment(1) })
   await batch.commit()
+  if (actor) {
+    const { notify } = await import('./notifications')
+    await notify({
+      recipientId: otherUid,
+      actorId: meUid,
+      actorName: actor.name,
+      actorPhotoURL: actor.photoURL,
+      kind: 'follow',
+    })
+  }
 }
 
 export async function unfollow(meUid: string, otherUid: string): Promise<void> {
